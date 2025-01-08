@@ -1,18 +1,37 @@
 // controllers/productController.js
-const productModel = require("../models/productModel");
+const productModel = require("../model/productModal");
 
 // Add Product
 exports.addProduct = async (req, res) => {
   try {
-    const { name, description, price, category } = req.body;
-    if (!name || !description || !price || !category) {
+    const {
+      product_name,
+      product_description,
+      product_price,
+      product_quantity,
+      product_stock,
+      product_category,
+      product_image,
+    } = req.body;
+    if (
+      !product_name &&
+      !product_description &&
+      !product_price &&
+      !product_quantity &&
+      !product_stock &&
+      !product_category &&
+      !product_image
+    ) {
       return res.status(400).json({ message: "All fields are required" });
     }
     const productId = await productModel.addProduct(
-      name,
-      description,
-      price,
-      category
+      product_name,
+      product_description,
+      product_price,
+      product_quantity,
+      product_stock,
+      product_category,
+      product_image
     );
     res.status(201).json({
       success: true,
@@ -21,7 +40,7 @@ exports.addProduct = async (req, res) => {
     });
   } catch (error) {
     console.error("Error creating product:", error);
-    res.status(500).json({ error: "Failed to create product" });
+    res.json({ error: "Failed to create product" });
   }
 };
 
@@ -32,7 +51,7 @@ exports.getAllProducts = async (req, res) => {
     res.status(200).json({ products });
   } catch (error) {
     console.error("Error fetching products:", error);
-    res.status(500).json({ error: "Failed to fetch products" });
+    res.json({ error: "Failed to fetch products" });
   }
 };
 
@@ -47,7 +66,7 @@ exports.getProductById = async (req, res) => {
     res.status(200).json({ product });
   } catch (error) {
     console.error("Error fetching product:", error);
-    res.status(500).json({ error: "Failed to fetch product" });
+    res.json({ error: "Failed to fetch product" });
   }
 };
 
@@ -55,13 +74,24 @@ exports.getProductById = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, category } = req.body;
+    const {
+      product_name,
+      product_description,
+      product_price,
+      product_quantity,
+      product_stock,
+      product_category,
+      product_image,
+    } = req.body;
     const isUpdated = await productModel.updateProduct(
       id,
-      name,
-      description,
-      price,
-      category
+      product_name,
+      product_description,
+      product_price,
+      product_quantity,
+      product_stock,
+      product_category,
+      product_image
     );
     if (!isUpdated) {
       return res.status(404).json({ message: "Product not found" });
@@ -69,7 +99,7 @@ exports.updateProduct = async (req, res) => {
     res.status(200).json({ message: "Product updated successfully!" });
   } catch (error) {
     console.error("Error updating product:", error);
-    res.status(500).json({ error: "Failed to update product" });
+    res.json({ error: "Failed to update product" });
   }
 };
 
@@ -84,6 +114,6 @@ exports.deleteProduct = async (req, res) => {
     res.status(200).json({ message: "Product deleted successfully!" });
   } catch (error) {
     console.error("Error deleting product:", error);
-    res.status(500).json({ error: "Failed to delete product" });
+    res.json({ error: "Failed to delete product" });
   }
 };

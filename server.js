@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 const usersRoutes = require("./routes/usersRoutes");
 const usersPaymentRoute = require("./routes/paymentRoutes");
 
+const adminRoutes = require("./routes/adminRoutes");
+
 const { errorHandler } = require("./middlewares/errorHandler");
 const dotenv = require("dotenv");
 dotenv.config();
@@ -37,6 +39,8 @@ app.use(
 // Routes
 
 app.use("/users", usersRoutes, usersPaymentRoute);
+
+app.use("/admin", adminRoutes);
 
 // Route to handle the download request
 app.get("/download/:tableName", async (req, res) => {

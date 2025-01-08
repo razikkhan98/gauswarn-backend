@@ -4,6 +4,8 @@ const express = require("express");
 const router = express.Router();
 const cartController = require("../controllers/cartController");
 const feedbackController = require("../controllers/feedbackController");
+const productController = require("../controllers/productController");
+
 // const paymentController = require("../controllers/paymentController")
 const contactController = require("../controllers/contactController");
 const { exportTableToExcel } = require("../controllers/excelController");
