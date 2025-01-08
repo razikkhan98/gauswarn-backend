@@ -1,24 +1,59 @@
 // models/cartModel.js
 
 const db = require("../config/dbConnection"); // MySQL database connection
+const moment = require("moment");
 
 // Find a cart item by product_id and user_id
 
 exports.findCartItem = async (product_id, user_id) => {
   try {
     // Ensure to await the query to resolve the promise
+    
     const query =
       "SELECT * FROM organic_farmer_table_addtocart WHERE product_id = ? AND user_id = ?";
     const [rows] = await db.promise().query(query, [product_id, user_id]);
 
     // Log the results for debugging purposes
-    console.log("results: ", rows);
+    console.log(
+      "results:findCartItem ",
+      rows,
+      moment().format("MMMM Do YYYY, h:mm:ss a")
+    );
 
     // Return the results (assuming you want the first row)
     return rows;
   } catch (error) {
+    try {
+      db.connect();
+
+      // Ensure to await the query to resolve the promise
+      const query =
+        "SELECT * FROM organic_farmer_table_addtocart WHERE product_id = ? AND user_id = ?";
+      const [rows] = await db.promise().query(query, [product_id, user_id]);
+
+      // Log the results for debugging purposes
+      console.log(
+        "results:findCartItem 2",
+        rows,
+        moment().format("MMMM Do YYYY, h:mm:ss a")
+      );
+
+      // Return the results (assuming you want the first row)
+      return rows;
+    } catch (error) {
+      console.log(
+        "error:findCartItem ",
+        error,
+        moment().format("MMMM Do YYYY, h:mm:ss a")
+      );  
+    }
+
     // Log any errors that occur during the query execution
-    console.log("error: ", error);
+    console.log(
+      "error:findCartItem ",
+      error,
+      moment().format("MMMM Do YYYY, h:mm:ss a")
+    );
   }
 };
 
@@ -50,13 +85,25 @@ exports.addCartItem = async (cartItem) => {
           product_total_amount || "",
         ],
         (err, results) => {
-          if (err) reject(err);
+          if (err) {
+            console.log(
+              "err:addCartItem ",
+              err,
+              moment().format("MMMM Do YYYY, h:mm:ss a")
+            );
+            reject(err);
+          }
           resolve(results); // Return the ID of the inserted item
         }
       );
     });
   } catch (error) {
-    console.log("error: ", error);
+    console.log(
+      "error:addCartItem ",
+      error,
+      moment().format("MMMM Do YYYY, h:mm:ss a")
+    );
+    db.connect();
   }
 };
 
@@ -77,13 +124,26 @@ exports.updateCartItem = async (
         query,
         [newQuantity, newTotalAmount, product_id, user_id],
         (err, results) => {
-          if (err) reject(err);
+          if (err) {
+            console.log(
+              "err:updateCartItem ",
+              err,
+              moment().format("MMMM Do YYYY, h:mm:ss a")
+            );
+
+            reject(err);
+          }
           resolve(results.affectedRows); // Return the number of rows affected
         }
       );
     });
   } catch (error) {
-    console.log("error: ", error);
+    console.log(
+      "error:updateCartItem ",
+      error,
+      moment().format("MMMM Do YYYY, h:mm:ss a")
+    );
+    db.connect();
   }
 };
 
@@ -97,7 +157,11 @@ exports.removeFromCartModal = async (user_id, product_id) => {
 
     // Executing the delete query
     const [result] = await db.promise().query(query, [product_id, user_id]);
-    console.log('result: ', result);
+    console.log(
+      "result:removeFromCartModal ",
+      result,
+      moment().format("MMMM Do YYYY, h:mm:ss a")
+    );
 
     // Check if any rows were affected (i.e., if the item was deleted)
     if (result.affectedRows > 0) {
@@ -106,7 +170,11 @@ exports.removeFromCartModal = async (user_id, product_id) => {
       return { message: "No matching product found in cart" };
     }
   } catch (error) {
-    console.error("Error removing product from cart:", error);
-
+    console.error(
+      "Error removing product from cart:",
+      error,
+      moment().format("MMMM Do YYYY, h:mm:ss a")
+    );
+    db.connect();
   }
 };

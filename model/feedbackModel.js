@@ -1,21 +1,5 @@
 const db = require("../config/dbConnection");
 
-// Register a new user
-// exports.addReview = async (name, email, rating, feedback) => {
-
-//   const query = `
-//   INSERT INTO organic_farmer_feedback_table(
-//    name, email, rating, feedback
-//   )VALUES(?,?,?,?)`;
-
-//   // Execute the query with the user data
-//   const [results] = await db
-//     .promise()
-//     .query(query, [name, email, rating, feedback]);
-
-//   return results;
-// };
-
 exports.addReview = async (name, email, rating, feedback) => {
   try {
     console.log("Connecting to database...");
@@ -24,7 +8,9 @@ exports.addReview = async (name, email, rating, feedback) => {
       VALUES (?, ?, ?, ?)
     `;
     // console.log("Executing query:", query);
-    const [result] = await db.promise().query(query, [name, email, rating, feedback]);
+    const [result] = await db
+      .promise()
+      .query(query, [name, email, rating, feedback]);
     // console.log("Query result:", result);
     return result.insertId;
   } catch (error) {
@@ -33,8 +19,6 @@ exports.addReview = async (name, email, rating, feedback) => {
   }
 };
 
-
-
 // Fetch all reviews
 exports.getAllReviews = async () => {
   try {
@@ -42,6 +26,47 @@ exports.getAllReviews = async () => {
     const [rows] = await db.promise().query(query);
     return rows;
   } catch (error) {
-    console.log('error: ', error);
+    console.log("error: ", error);
+  }
+};
+
+// new
+
+// Get Single Review by ID
+exports.getReviewByIdModal = async (id) => {
+  try {
+    const query = "SELECT * FROM organic_farmer_feedback_table WHERE id = ?";
+    const [review] = await db.promise().query(query, [id]);
+    return review.length > 0 ? review[0] : null;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+// Update Review
+exports.updateReviewModal = async (id, name, email, rating, feedback) => {
+  try {
+    const query = `
+      UPDATE organic_farmer_feedback_table
+      SET name = ?, email = ?, rating = ?, feedback = ?
+      WHERE id = ?
+    `;
+    const [result] = await db
+      .promise()
+      .query(query, [name, email, rating, feedback, id]);
+    return result.affectedRows > 0;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+// Delete Review
+exports.deleteReviewModal = async (id) => {
+  try {
+    const query = "DELETE FROM organic_farmer_feedback_table WHERE id = ?";
+    const [result] = await db.promise().query(query, [id]);
+    return result.affectedRows > 0;
+  } catch (error) {
+    throw new Error(error.message);
   }
 };

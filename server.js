@@ -1,10 +1,10 @@
 const express = require("express");
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 const usersRoutes = require("./routes/usersRoutes");
 const usersPaymentRoute = require("./routes/paymentRoutes");
 
 const { errorHandler } = require("./middlewares/errorHandler");
-const dotenv = require("dotenv")
+const dotenv = require("dotenv");
 dotenv.config();
 const cors = require("cors");
 
@@ -12,7 +12,7 @@ const cors = require("cors");
 const db = require("./config/dbConnection");
 const { exportTableToExcel } = require("./controllers/excelController");
 db.connect();
-const fs = require('fs');
+const fs = require("fs");
 
 // Initiate express app
 
@@ -26,19 +26,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // Allow specific origins or all origins
-app.use(cors({
-  origin: "*", // Replace with your frontend URL
-  methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
-  credentials: true // If you need to allow credentials (e.g., cookies)
-}));
+app.use(
+  cors({
+    origin: "*", // Replace with your frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
+    credentials: true, // If you need to allow credentials (e.g., cookies)
+  })
+);
 
 // Routes
 
 app.use("/users", usersRoutes, usersPaymentRoute);
 
-
 // Route to handle the download request
-app.get('/download/:tableName', async (req, res) => {
+app.get("/download/:tableName", async (req, res) => {
   const { tableName } = req.params;
   // const tableName = `organic_farmer_table_payment`
 
@@ -49,21 +50,19 @@ app.get('/download/:tableName', async (req, res) => {
     // Send the file for download
     res.download(filePath, `${tableName}.csv`, (err) => {
       if (err) {
-        console.error('Error sending file:', err.message);
-        res.status(500).send('Error downloading the file.');
+        console.error("Error sending file:", err.message);
+        res.status(500).send("Error downloading the file.");
       }
 
       // Optional: Remove the file after sending it
       fs.unlink(filePath, (err) => {
-        if (err) console.error('Error deleting file:', err.message);
+        if (err) console.error("Error deleting file:", err.message);
       });
     });
   } catch (error) {
-    res.status(500).send('Error exporting the table to Excel.');
+    res.status(500).send("Error exporting the table to Excel.");
   }
 });
-
-
 
 // // Path to the uploaded file
 // const uploadedFilePath = path.join(__dirname, 'organic_farmer_contact_table.csv');
@@ -78,8 +77,6 @@ app.get('/download/:tableName', async (req, res) => {
 //     }
 //   });
 // });
-
-
 
 // Add other routes
 
