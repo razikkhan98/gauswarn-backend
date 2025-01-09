@@ -13,6 +13,7 @@ exports.addProduct = async (req, res) => {
       product_category,
       product_image,
     } = req.body;
+    console.log('req.body: ', req.body);
     if (
       !product_name &&
       !product_description &&

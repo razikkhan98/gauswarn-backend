@@ -21,7 +21,7 @@ router.post("/updateCartItem", cartController.updateFromCart);
 // User Contact
 router.post("/contact", contactController.contact);
 
-// new feedbacks
+// new
 
 // User Add Feedback
 router.post("/feedback", feedbackController.feedback);

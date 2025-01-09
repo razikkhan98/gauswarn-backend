@@ -34,3 +34,14 @@ exports.contact = async (userTable) => {
     throw new Error("Error saving contact information to the database.");
   }
 };
+
+// Get All contact
+exports.getAllContact = async () => {
+  try {
+    const query = "SELECT * FROM organic_farmer_contact_table";
+    const [contact] = await db.promise().query(query);
+    return contact;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
