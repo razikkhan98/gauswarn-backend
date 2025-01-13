@@ -21,14 +21,30 @@ const createEmailTransporter = async () => {
   }
 };
 
+// const withConnection = async (callback) => {
+//   const connection = await connectToDatabase();
+//   try {
+//     return await callback(connection);
+//   } catch (err) {
+//     throw err;
+//   } finally {
+//     connection.end();
+//   }
+// };
+
 const withConnection = async (callback) => {
-  const connection = await connectToDatabase();
+  const connection = await connectToDatabase(); // Assume this establishes a DB connection
   try {
     return await callback(connection);
   } catch (err) {
-    throw err;
+    console.error("Error in withConnection:---------------------", err);
+    connection.destroy(); // Destroy the connection if an error occurs
+    throw err; // Rethrow the error for higher-level handling
   } finally {
-    connection.end();
+    if (connection && connection.state !== "disconnected") {
+      connection.end(); // Gracefully end the connection if no errors occurred
+    }
   }
 };
+
 module.exports = { createEmailTransporter, withConnection };
