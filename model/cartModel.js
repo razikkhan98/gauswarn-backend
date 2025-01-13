@@ -8,7 +8,7 @@ const moment = require("moment");
 exports.findCartItem = async (product_id, user_id) => {
   try {
     // Ensure to await the query to resolve the promise
-    
+
     const query =
       "SELECT * FROM organic_farmer_table_addtocart WHERE product_id = ? AND user_id = ?";
     const [rows] = await db.promise().query(query, [product_id, user_id]);
@@ -24,6 +24,11 @@ exports.findCartItem = async (product_id, user_id) => {
     return rows;
   } catch (error) {
     try {
+      console.log(
+        "results:findCartItem2 ----- second catch ",
+        error,
+        moment().format("MMMM Do YYYY, h:mm:ss a")
+      );
       db.connect();
 
       // Ensure to await the query to resolve the promise
@@ -41,11 +46,12 @@ exports.findCartItem = async (product_id, user_id) => {
       // Return the results (assuming you want the first row)
       return rows;
     } catch (error) {
+      db.connect();
       console.log(
         "error:findCartItem ",
         error,
         moment().format("MMMM Do YYYY, h:mm:ss a")
-      );  
+      );
     }
 
     // Log any errors that occur during the query execution

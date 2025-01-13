@@ -7,6 +7,22 @@ const contactController = require("../controllers/contactController");
 const adminLoginAndRegisterController = require("../controllers/adminLoginAndRegisterController");
 const feedbackController = require("../controllers/feedbackController");
 const adminUserInfoController = require("../controllers/adminUserInfoController");
+const adminForgotAndResetPasswdController = require("../controllers/adminForgotAndResetPasswdController");
+
+/** admin auth */
+/** admin registration*/
+router.post("/register", adminLoginAndRegisterController.adminUserRegister);
+
+/** admin login*/
+router.post("/login", adminLoginAndRegisterController.adminUserLogin);
+
+//forget password
+router.post("/forgetPassword", adminForgotAndResetPasswdController.forgetPassword);
+
+//Re-set password
+router.post("/reset", adminForgotAndResetPasswdController.passwordReset);
+
+/** admin auth end */
 
 /** Products routes  * */
 // create
@@ -25,12 +41,6 @@ router.post("/deleteProductById/:id", productController.deleteProduct);
 /** Contact route */
 router.get("/getAllContact", contactController.getAllContact);
 /** Contact route end */
-
-/** admin registration*/
-router.post("/register", adminLoginAndRegisterController.adminUserRegister);
-
-/** admin login*/
-router.post("/login", adminLoginAndRegisterController.adminUserLogin);
 
 /** admin feedback*/
 // get All
