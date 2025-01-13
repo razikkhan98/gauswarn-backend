@@ -1,10 +1,12 @@
-const db = require("../config/dbConnection");
+const { withConnection } = require("../utils/helper");
 
 exports.findAdminUserByEmail = async (email) => {
   try {
-    const query = `SELECT * FROM organic_farmer_admin_user WHERE email =?`;
-    const [rows] = await db.promise().query(query, [email]);
-    return rows[0] || null;
+    return await withConnection(async (connection) => {
+      const query = `SELECT * FROM organic_farmer_admin_user WHERE email = ?`;
+      const [rows] = await connection.execute(query, [email]);
+      return rows[0] || null;
+    });
   } catch (error) {
     console.log("error: ", error);
     return error;
@@ -17,13 +19,18 @@ exports.adminUserRegister = async (registerTable) => {
 
   //MySQl query
   try {
-    const query = `INSERT INTO organic_farmer_admin_user (full_name, email, mobile_number, password) VALUES (?, ?, ?, ?)`;
+    return await withConnection(async (connection) => {
+      const query = `INSERT INTO organic_farmer_admin_user (full_name, email, mobile_number, password) VALUES (?, ?, ?, ?)`;
 
-    //Execute the query
-    const [results] = await db
-      .promise()
-      .query(query, [full_name, email, mobile_number, password]);
-    return results;
+      //Execute the query
+      const [results] = await connection.execute(query, [
+        full_name,
+        email,
+        mobile_number,
+        password,
+      ]);
+      return results;
+    });
   } catch (error) {
     console.log("error: ", error);
     return error;

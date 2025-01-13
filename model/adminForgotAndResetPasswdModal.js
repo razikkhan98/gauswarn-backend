@@ -1,8 +1,7 @@
-const db = require("../config/dbConnection");
 const {
   forgetPasswordTemplate,
 } = require("../emailTemplates/forgetPasswordTemplate");
-const { createEmailTransporter } = require("../utils/helper");
+const { createEmailTransporter, withConnection } = require("../utils/helper");
 
 //generate OTP 6 digits
 const generateOTP = () => {
@@ -27,8 +26,9 @@ exports.sendOTPEmail = async (to, hostname) => {
     const info = await transporter.sendMail(mailOptions);
     console.log("info: ", info);
 
-    await forgetpassword(otp);
-    return otp;
+    await setForgotPasswordOtp(to, otp);
+
+    return info;
   } catch (error) {
     console.log("Error sending OTP email:", error);
     throw error;
@@ -37,9 +37,11 @@ exports.sendOTPEmail = async (to, hostname) => {
 
 exports.findUserByEmail = async (email) => {
   try {
-    const query = `SELECT * FROM organic_farmer_admin_user WHERE email = ?`;
-    const [rows] = await db.promise().query(query, [email]);
-    return rows[0] || null;
+    return await withConnection(async (connection) => {
+      const query = `SELECT * FROM organic_farmer_admin_user WHERE email = ?`;
+      const [rows] = await connection.execute(query, [email]);
+      return rows[0] || null;
+    });
   } catch (error) {
     console.log("Error ", error);
     return error;
@@ -48,24 +50,47 @@ exports.findUserByEmail = async (email) => {
 
 exports.findUserOTP = async (otp) => {
   try {
-    const query = `SELECT * FROM organic_farmer_admin_user WHERE otp = ?`;
-    const [rows] = await db.promise().query(query, [otp]);
-    return rows[0] || null;
+    return await withConnection(async (connection) => {
+      const query = `SELECT * FROM organic_farmer_admin_user WHERE otp = ?`;
+      const [rows] = await connection.execute(query, [otp]);
+      return rows[0] || null;
+    });
   } catch (error) {
     console.log("error: ", error);
     throw error;
   }
 };
 /// Re-set password
-exports.resetPassword = async (email, hashedPassword) => {
-  const query = `UPDATE organic_farmer_admin_user SET password = ? ,otp = NULL WHERE email = ? `;
-  const [rows] = await db.promise().query(query, [hashedPassword, email]);
-  if (rows.affectedRows > 0) {
-    return { message: "Password reset sucessfully" };
-  }
+exports.resetPassword = async (email, otp, hashedPassword) => {
   try {
+    return await withConnection(async (connection) => {
+      const query = `UPDATE organic_farmer_admin_user SET password = ? ,otp = NULL WHERE email = ? AND otp = ?`;
+      const [rows] = await connection.execute(query, [
+        hashedPassword,
+        email,
+        otp,
+      ]);
+      if (rows.affectedRows > 0) {
+        return { message: "Password reset sucessfully" };
+      }
+    });
   } catch (error) {
     console.log("Error in resetpassword:", error);
+    throw error;
+  }
+};
+
+const setForgotPasswordOtp = async (email, otp) => {
+  try {
+    return await withConnection(async (connection) => {
+      const query = `UPDATE organic_farmer_admin_user SET otp = ?  WHERE email = ? `;
+      const [rows] = await connection.execute(query, [otp, email]);
+      if (rows.affectedRows > 0) {
+        return { message: "save otp sucessfully" };
+      }
+    });
+  } catch (error) {
+    console.log("Error in setForgotPasswordOtp:", error);
     throw error;
   }
 };

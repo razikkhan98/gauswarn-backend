@@ -2,11 +2,10 @@
 
 const express = require("express");
 const {
-  getPhonePeUrl,
-  getPhonePeUrlStatus,
   createPaymentAndGenerateUrl,
   getPhonePeUrlStatusAndUpdatePayment,
 } = require("../controllers/paymentControllers");
+const { errorHandler } = require("../middlewares/errorHandler");
 const router = express.Router();
 
 /**
@@ -14,5 +13,7 @@ const router = express.Router();
  * */
 router.post("/create-order", createPaymentAndGenerateUrl);
 router.post("/status", getPhonePeUrlStatusAndUpdatePayment);
+
+router.use(errorHandler);
 
 module.exports = router;

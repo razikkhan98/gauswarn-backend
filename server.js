@@ -11,10 +11,9 @@ dotenv.config();
 const cors = require("cors");
 
 // Connect to the database
-const db = require("./config/dbConnection");
 const { exportTableToExcel } = require("./controllers/excelController");
-db.connect();
 const fs = require("fs");
+const { connectToDatabase } = require("./config/dbConnection");
 
 // Initiate express app
 
@@ -89,6 +88,19 @@ app.use(errorHandler);
 
 // Starting the server
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server running on port ${port}`);
+// });
+
+async function startServer() {
+  try {
+    await connectToDatabase();
+    app.listen(port, () => {
+      console.log(`Server running on port ${port}`);
+    });
+  } catch (err) {
+    console.error("Failed to start server:", err);
+    process.exit(1);
+  }
+}
+startServer();

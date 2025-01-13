@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const { connectToDatabase } = require("../config/dbConnection");
 
 const createEmailTransporter = async () => {
   try {
@@ -19,4 +20,15 @@ const createEmailTransporter = async () => {
     throw error;
   }
 };
-module.exports = { createEmailTransporter };
+
+const withConnection = async (callback) => {
+  const connection = await connectToDatabase();
+  try {
+    return await callback(connection);
+  } catch (err) {
+    throw err;
+  } finally {
+    connection.end();
+  }
+};
+module.exports = { createEmailTransporter, withConnection };

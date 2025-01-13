@@ -28,7 +28,6 @@ exports.forgetPassword = asyncHandler(async (req, res) => {
 // //   Re-set password
 exports.passwordReset = asyncHandler(async (req, res) => {
   const { otp, newPassword } = req.body;
-  console.log(req.body);
 
   //validation
   // Validation: Check if newPassword is provided
@@ -51,15 +50,16 @@ exports.passwordReset = asyncHandler(async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     // Update password and clear OTP
-    await adminForgotAndResetPasswdModal.resetPassword(
-      reset.otp,
+    const msg = await adminForgotAndResetPasswdModal.resetPassword(
+      reset?.email,
+      otp,
       hashedPassword
     );
 
     // await user.save();
-    res.status(200).json({ message: "password reset successfully" });
+    res.status(200).json({ message: msg });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error" });
+    res.json({ message: "Server error" });
   }
 });

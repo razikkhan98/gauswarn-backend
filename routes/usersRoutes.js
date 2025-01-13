@@ -9,6 +9,7 @@ const productController = require("../controllers/productController");
 // const paymentController = require("../controllers/paymentController")
 const contactController = require("../controllers/contactController");
 const { exportTableToExcel } = require("../controllers/excelController");
+const { errorHandler } = require("../middlewares/errorHandler");
 
 // User Add to cart
 router.post("/login/addtocart", cartController.addToCart);
@@ -40,5 +41,7 @@ router.delete("/deleteFeedbackById/:id", feedbackController.deleteReviewById);
 
 // testingCSV
 router.get("/getCSV", exportTableToExcel);
+
+router.use(errorHandler);
 
 module.exports = router;

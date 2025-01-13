@@ -8,6 +8,7 @@ const adminLoginAndRegisterController = require("../controllers/adminLoginAndReg
 const feedbackController = require("../controllers/feedbackController");
 const adminUserInfoController = require("../controllers/adminUserInfoController");
 const adminForgotAndResetPasswdController = require("../controllers/adminForgotAndResetPasswdController");
+const { errorHandler } = require("../middlewares/errorHandler");
 
 /** admin auth */
 /** admin registration*/
@@ -17,7 +18,10 @@ router.post("/register", adminLoginAndRegisterController.adminUserRegister);
 router.post("/login", adminLoginAndRegisterController.adminUserLogin);
 
 //forget password
-router.post("/forgetPassword", adminForgotAndResetPasswdController.forgetPassword);
+router.post(
+  "/forgetPassword",
+  adminForgotAndResetPasswdController.forgetPassword
+);
 
 //Re-set password
 router.post("/reset", adminForgotAndResetPasswdController.passwordReset);
@@ -56,4 +60,6 @@ router.get("/getAllUserInfo", adminUserInfoController.getAllUserInfo);
 /** order details payment table*/
 router.get("/getAllOrderDetails", adminUserInfoController.getAllOrderDetails);
 /** order details payment table end*/
+
+router.use(errorHandler);
 module.exports = router;

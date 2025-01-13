@@ -1,4 +1,4 @@
-const db = require("../config/dbConnection");
+const { withConnection } = require("../utils/helper");
 
 // Save contact information to the database
 exports.contact = async (userTable) => {
@@ -6,8 +6,9 @@ exports.contact = async (userTable) => {
     const { user_name, user_email, user_mobile, user_subject, user_message } =
       userTable;
 
-    // SQL query
-    const query = `
+    return await withConnection(async (connection) => {
+      // SQL query
+      const query = `
     INSERT INTO organic_farmer_contact_table (
       user_name,
       user_email,
@@ -17,10 +18,8 @@ exports.contact = async (userTable) => {
     ) VALUES (?, ?, ?, ?, ?)
   `;
 
-    // Execute the query with the user data
-    const [results] = await db
-      .promise()
-      .query(query, [
+      // Execute the query with the user data
+      const [results] = await connection.execute(query, [
         user_name,
         user_email,
         user_mobile,
@@ -28,7 +27,8 @@ exports.contact = async (userTable) => {
         user_message,
       ]);
 
-    return results; // Return query results if needed
+      return results; // Return query results if needed
+    });
   } catch (error) {
     console.error("Database error:", error); // Log the error for debugging
     throw new Error("Error saving contact information to the database.");
@@ -38,9 +38,11 @@ exports.contact = async (userTable) => {
 // Get All contact
 exports.getAllContact = async () => {
   try {
-    const query = "SELECT * FROM organic_farmer_contact_table";
-    const [contact] = await db.promise().query(query);
-    return contact;
+    return await withConnection(async (connection) => {
+      const query = "SELECT * FROM organic_farmer_contact_table";
+      const [contact] = await connection.execute(query);
+      return contact;
+    });
   } catch (error) {
     throw new Error(error.message);
   }

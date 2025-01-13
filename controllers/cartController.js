@@ -3,7 +3,7 @@ const cartModel = require("../model/cartModel"); // Make sure to import your car
 const moment = require("moment");
 
 // Add to Cart Endpoint
-exports.addToCart = asyncHandler(async (req, res) => {
+exports.addToCart = asyncHandler(async (req, res, next) => {
   const {
     product_id,
     user_id,
@@ -83,6 +83,7 @@ exports.addToCart = asyncHandler(async (req, res) => {
       error,
       moment().format("MMMM Do YYYY, h:mm:ss a")
     );
+    next(error);
     return res.json({
       message: "Server error, failed to add to cart",
       error,
@@ -117,7 +118,7 @@ exports.removeFromCart = asyncHandler(async (req, res) => {
   }
 });
 
-exports.updateFromCart = asyncHandler(async (req, res) => {
+exports.updateFromCart = asyncHandler(async (req, res, next) => {
   try {
     const { product_id, user_id, product_quantity, product_total_amount } =
       req.body;
@@ -155,6 +156,7 @@ exports.updateFromCart = asyncHandler(async (req, res) => {
       error,
       moment().format("MMMM Do YYYY, h:mm:ss a")
     );
+    next(error);
     return res.json({
       message: "Server error, failed to update cart",
       date: moment().format("MMMM Do YYYY, h:mm:ss a"),

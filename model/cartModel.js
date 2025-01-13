@@ -1,27 +1,28 @@
 // models/cartModel.js
 
-const db = require("../config/dbConnection"); // MySQL database connection
 const moment = require("moment");
+const { withConnection } = require("../utils/helper");
 
 // Find a cart item by product_id and user_id
 
 exports.findCartItem = async (product_id, user_id) => {
   try {
     // Ensure to await the query to resolve the promise
+    return await withConnection(async (connection) => {
+      const query =
+        "SELECT * FROM organic_farmer_table_addtocart WHERE product_id = ? AND user_id = ?";
+      const [rows] = await connection.execute(query, [product_id, user_id]);
 
-    const query =
-      "SELECT * FROM organic_farmer_table_addtocart WHERE product_id = ? AND user_id = ?";
-    const [rows] = await db.promise().query(query, [product_id, user_id]);
+      // Log the results for debugging purposes
+      console.log(
+        "results:findCartItem ",
+        rows,
+        moment().format("MMMM Do YYYY, h:mm:ss a")
+      );
 
-    // Log the results for debugging purposes
-    console.log(
-      "results:findCartItem ",
-      rows,
-      moment().format("MMMM Do YYYY, h:mm:ss a")
-    );
-
-    // Return the results (assuming you want the first row)
-    return rows;
+      // Return the results (assuming you want the first row)
+      return rows;
+    });
   } catch (error) {
     try {
       console.log(
@@ -29,26 +30,24 @@ exports.findCartItem = async (product_id, user_id) => {
         error,
         moment().format("MMMM Do YYYY, h:mm:ss a")
       );
-      db.connect();
+      return await withConnection(async (connection) => {
+        const query =
+          "SELECT * FROM organic_farmer_table_addtocart WHERE product_id = ? AND user_id = ?";
+        const [rows] = await connection.execute(query, [product_id, user_id]);
 
-      // Ensure to await the query to resolve the promise
-      const query =
-        "SELECT * FROM organic_farmer_table_addtocart WHERE product_id = ? AND user_id = ?";
-      const [rows] = await db.promise().query(query, [product_id, user_id]);
+        // Log the results for debugging purposes
+        console.log(
+          "results:findCartItem ",
+          rows,
+          moment().format("MMMM Do YYYY, h:mm:ss a")
+        );
 
-      // Log the results for debugging purposes
-      console.log(
-        "results:findCartItem 2",
-        rows,
-        moment().format("MMMM Do YYYY, h:mm:ss a")
-      );
-
-      // Return the results (assuming you want the first row)
-      return rows;
+        // Return the results (assuming you want the first row)
+        return rows;
+      });
     } catch (error) {
-      db.connect();
       console.log(
-        "error:findCartItem ",
+        "error:findCartItem-------2 secound console ",
         error,
         moment().format("MMMM Do YYYY, h:mm:ss a")
       );
@@ -56,7 +55,7 @@ exports.findCartItem = async (product_id, user_id) => {
 
     // Log any errors that occur during the query execution
     console.log(
-      "error:findCartItem ",
+      "error:findCartItem1-------------1 ",
       error,
       moment().format("MMMM Do YYYY, h:mm:ss a")
     );
@@ -76,40 +75,28 @@ exports.addCartItem = async (cartItem) => {
       product_total_amount,
     } = cartItem;
 
-    const query =
-      "INSERT INTO organic_farmer_table_addtocart (user_id, product_id, product_price,product_weight, product_quantity, product_total_amount) VALUES (?, ?, ?, ?, ?,?)";
+    return await withConnection(async (connection) => {
+      const query =
+        "INSERT INTO organic_farmer_table_addtocart (user_id, product_id, product_price, product_weight, product_quantity, product_total_amount) VALUES (?, ?, ?, ?, ?, ?)";
 
-    return new Promise((resolve, reject) => {
-      db.execute(
-        query,
-        [
-          user_id || "",
-          product_id || "",
-          product_price || "",
-          product_weight || "",
-          product_quantity || "",
-          product_total_amount || "",
-        ],
-        (err, results) => {
-          if (err) {
-            console.log(
-              "err:addCartItem ",
-              err,
-              moment().format("MMMM Do YYYY, h:mm:ss a")
-            );
-            reject(err);
-          }
-          resolve(results); // Return the ID of the inserted item
-        }
-      );
+      const [results] = await connection.execute(query, [
+        user_id || "",
+        product_id || "",
+        product_price || "",
+        product_weight || "",
+        product_quantity || "",
+        product_total_amount || "",
+      ]);
+
+      return results; // Return the ID of the inserted item or results if needed
     });
   } catch (error) {
-    console.log(
-      "error:addCartItem ",
+    console.error(
+      "Error in addCartItem:",
       error,
       moment().format("MMMM Do YYYY, h:mm:ss a")
     );
-    db.connect();
+    throw error; // Rethrow for upstream error handling
   }
 };
 
@@ -122,34 +109,26 @@ exports.updateCartItem = async (
   newTotalAmount
 ) => {
   try {
-    const query =
-      "UPDATE organic_farmer_table_addtocart SET product_quantity = ?, product_total_amount = ? WHERE product_id = ? AND user_id = ?";
+    return await withConnection(async (connection) => {
+      const query =
+        "UPDATE organic_farmer_table_addtocart SET product_quantity = ?, product_total_amount = ? WHERE product_id = ? AND user_id = ?";
 
-    return new Promise((resolve, reject) => {
-      db.execute(
-        query,
-        [newQuantity, newTotalAmount, product_id, user_id],
-        (err, results) => {
-          if (err) {
-            console.log(
-              "err:updateCartItem ",
-              err,
-              moment().format("MMMM Do YYYY, h:mm:ss a")
-            );
+      const [results] = await connection.execute(query, [
+        newQuantity,
+        newTotalAmount,
+        product_id,
+        user_id,
+      ]);
 
-            reject(err);
-          }
-          resolve(results.affectedRows); // Return the number of rows affected
-        }
-      );
+      return results.affectedRows; // Return the number of rows affected
     });
   } catch (error) {
-    console.log(
-      "error:updateCartItem ",
+    console.error(
+      "Error in updateCartItem:",
       error,
       moment().format("MMMM Do YYYY, h:mm:ss a")
     );
-    db.connect();
+    throw error; // Rethrow the error for handling upstream
   }
 };
 
@@ -158,29 +137,31 @@ exports.updateCartItem = async (
 exports.removeFromCartModal = async (user_id, product_id) => {
   try {
     // Query to delete the cart item for the given product_id and user_id
-    const query =
-      "DELETE FROM organic_farmer_table_addtocart WHERE product_id = ? AND user_id = ?";
 
-    // Executing the delete query
-    const [result] = await db.promise().query(query, [product_id, user_id]);
-    console.log(
-      "result:removeFromCartModal ",
-      result,
-      moment().format("MMMM Do YYYY, h:mm:ss a")
-    );
+    return await withConnection(async (connection) => {
+      const query =
+        "DELETE FROM organic_farmer_table_addtocart WHERE product_id = ? AND user_id = ?";
 
-    // Check if any rows were affected (i.e., if the item was deleted)
-    if (result.affectedRows > 0) {
-      return { message: "Product removed from cart" };
-    } else {
-      return { message: "No matching product found in cart" };
-    }
+      // Executing the delete query
+      const [result] = await connection.execute(query, [product_id, user_id]);
+      console.log(
+        "result:removeFromCartModal ",
+        result,
+        moment().format("MMMM Do YYYY, h:mm:ss a")
+      );
+
+      // Check if any rows were affected (i.e., if the item was deleted)
+      if (result.affectedRows > 0) {
+        return { message: "Product removed from cart" };
+      } else {
+        return { message: "No matching product found in cart" };
+      }
+    });
   } catch (error) {
     console.error(
       "Error removing product from cart:",
       error,
       moment().format("MMMM Do YYYY, h:mm:ss a")
     );
-    db.connect();
   }
 };

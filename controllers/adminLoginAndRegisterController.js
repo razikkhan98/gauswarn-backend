@@ -6,30 +6,54 @@ const bcrypt = require("bcryptjs");
 exports.adminUserLogin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  // Check if email and password are provided
-  if (!email && !password) {
-    return res.json({
-      message: "Please provide either email , mobile number and password",
+  // Validate input
+  if (!email || !password) {
+    return res.status(400).json({
+      message: "Please provide both email and password.",
     });
   }
 
-  // Check if user exists  by email or phone
-  const user = await adminLoginAndRegisterModel.findAdminUserByEmail(email);
-  if (!user) {
-    return res.json({ message: "Email does not exist" });
+  try {
+    // Check if the user exists
+    const user = await adminLoginAndRegisterModel.findAdminUserByEmail(email);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Email does not exist.",
+      });
+    }
+
+    // Compare passwords
+    const isValidPassword = await bcrypt.compare(password, user.password);
+
+    if (!isValidPassword) {
+      return res.status(401).json({
+        message: "Invalid password.",
+      });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "30d", // Adjusted expiration format
+      }
+    );
+
+    // Successful login response
+    return res.status(200).json({
+      success: true,
+      message: "Login successful.",
+      accessToken: token,
+    });
+  } catch (error) {
+    console.error("Error during login:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
   }
-
-  // Generate and send JWT token
-  const token = jwt.sign({ user }, process.env.JWT_SECRET, {
-    expiresIn: "30 day",
-  });
-
-  // If the user is found, login is successful
-  return res.status(200).json({
-    success: true,
-    message: "Login successful.",
-    accessToken: token,
-  });
 });
 
 exports.adminUserRegister = asyncHandler(async (req, res) => {
