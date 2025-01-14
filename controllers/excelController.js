@@ -4,7 +4,7 @@ const path = require("path");
 const moment = require("moment");
 const { withConnection } = require("../utils/helper");
 
-async function exportTableToExcel(tableName) {
+async function exportTableByDateToExcel(tableName) {
   try {
     return await withConnection(async (connection) => {
       const todayDate = moment().format("YYYY-MM-DD");
@@ -36,6 +36,31 @@ async function exportTableToExcel(tableName) {
   }
 }
 
+async function exportTableToExcel(tableName) {
+  try {
+    return await withConnection(async (connection) => {
+      const query = `SELECT * FROM ${tableName}`;
+
+      const [rows] = await connection.execute(query);
+
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, tableName);
+
+      const filePath = path.join(__dirname, `${tableName}.csv`);
+      XLSX.writeFile(workbook, filePath);
+
+      console.log(`Excel file created successfully: ${filePath}`);
+      return filePath; // Return the file path
+    });
+  } catch (error) {
+    console.error("Error exporting table to Excel:", error.message);
+    throw error;
+  }
+}
+
 module.exports = {
   exportTableToExcel,
+  exportTableByDateToExcel,
 };
