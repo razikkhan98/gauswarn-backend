@@ -8,6 +8,7 @@ const adminLoginAndRegisterController = require("../controllers/adminLoginAndReg
 const feedbackController = require("../controllers/feedbackController");
 const adminUserInfoController = require("../controllers/adminUserInfoController");
 const adminForgotAndResetPasswdController = require("../controllers/adminForgotAndResetPasswdController");
+const CalculateGheeWebAppDataController = require("../controllers/CalculateGheeWebAppDataContoller");
 const { errorHandler } = require("../middlewares/errorHandler");
 
 /** admin auth */
@@ -60,6 +61,10 @@ router.get("/getAllUserInfo", adminUserInfoController.getAllUserInfo);
 /** order details payment table*/
 router.get("/getAllOrderDetails", adminUserInfoController.getAllOrderDetails);
 /** order details payment table end*/
+
+/** Caculate data*/
+router.get("/getAllSales", CalculateGheeWebAppDataController.getAllSales);
+/** Caculate data end*/
 
 router.use(errorHandler);
 module.exports = router;
