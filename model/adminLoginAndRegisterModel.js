@@ -15,19 +15,19 @@ exports.findAdminUserByEmail = async (email) => {
 
 // Registration new user
 exports.adminUserRegister = async (registerTable) => {
-  const { full_name, email, mobile_number, password } = registerTable;
+  const { full_name, email, mobile_number, password,role } = registerTable;
 
   //MySQl query
   try {
     return await withConnection(async (connection) => {
-      const query = `INSERT INTO organic_farmer_admin_user (full_name, email, mobile_number, password) VALUES (?, ?, ?, ?)`;
+      const query = `INSERT INTO organic_farmer_admin_user (full_name, email, mobile_number, password,role) VALUES (?, ?, ?, ?, ?)`;
 
       //Execute the query
       const [results] = await connection.execute(query, [
         full_name,
         email,
         mobile_number,
-        password,
+        password,role
       ]);
       return results;
     });

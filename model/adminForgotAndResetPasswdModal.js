@@ -24,7 +24,6 @@ exports.sendOTPEmail = async (to, hostname) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log("info: ", info);
 
     await setForgotPasswordOtp(to, otp);
 

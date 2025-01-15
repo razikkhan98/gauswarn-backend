@@ -10,6 +10,7 @@ const adminUserInfoController = require("../controllers/adminUserInfoController"
 const adminForgotAndResetPasswdController = require("../controllers/adminForgotAndResetPasswdController");
 const CalculateGheeWebAppDataController = require("../controllers/CalculateGheeWebAppDataContoller");
 const { errorHandler } = require("../middlewares/errorHandler");
+const { authMiddleware } = require("../middlewares/authMiddleware");
 
 /** admin auth */
 /** admin registration*/
@@ -31,40 +32,69 @@ router.post("/reset", adminForgotAndResetPasswdController.passwordReset);
 
 /** Products routes  * */
 // create
-router.post("/createProduct", productController.addProduct);
+router.post("/createProduct", authMiddleware, productController.addProduct);
 // get All
-router.get("/getAllProduct", productController.getAllProducts);
+router.get("/getAllProduct", authMiddleware, productController.getAllProducts);
 // get single by id
-router.post("/getProductById/:id", productController.getProductById);
+router.post(
+  "/getProductById/:id",
+  authMiddleware,
+  productController.getProductById
+);
 // update single by id
-router.post("/updateProductById/:id", productController.updateProduct);
+router.post(
+  "/updateProductById/:id",
+  authMiddleware,
+  productController.updateProduct
+);
 // delete
-router.post("/deleteProductById/:id", productController.deleteProduct);
+router.post(
+  "/deleteProductById/:id",
+  authMiddleware,
+  productController.deleteProduct
+);
 
 /** Products routes end * */
 
 /** Contact route */
-router.get("/getAllContact", contactController.getAllContact);
+router.get("/getAllContact", authMiddleware, contactController.getAllContact);
 /** Contact route end */
 
 /** admin feedback*/
 // get All
-router.get("/allfeedback", feedbackController.getReviews);
+router.get("/allfeedback", authMiddleware, feedbackController.getReviews);
 // create feedback
-router.post("/createFeedback", feedbackController.feedback);
+router.post("/createFeedback", authMiddleware, feedbackController.feedback);
 /** admin feedback end*/
 
 /** user info for payment table*/
-router.get("/getAllUserInfo", adminUserInfoController.getAllUserInfo);
+router.get(
+  "/getAllUserInfo",
+  authMiddleware,
+  adminUserInfoController.getAllUserInfo
+);
 /** user info for payment table end*/
 
 /** order details payment table*/
-router.get("/getAllOrderDetails", adminUserInfoController.getAllOrderDetails);
+router.get(
+  "/getAllOrderDetails",
+  authMiddleware,
+  adminUserInfoController.getAllOrderDetails
+);
 /** order details payment table end*/
 
 /** Caculate data*/
-router.get("/getAllSales", CalculateGheeWebAppDataController.getAllSales);
+router.get(
+  "/getAllSales",
+  authMiddleware,
+  CalculateGheeWebAppDataController.getAllSales
+);
 /** Caculate data end*/
 
+/** get logined in user data pass token */
+router.get("/me", authMiddleware, adminLoginAndRegisterController.meAPI);
+/** get logined in user data */
+
 router.use(errorHandler);
+
 module.exports = router;

@@ -2,46 +2,42 @@ const asyncHandler = require("express-async-handler");
 const adminLoginAndRegisterModel = require("../model/adminLoginAndRegisterModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const authMiddleware = require("../middlewares/authMiddleware");
 
 exports.adminUserLogin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  // Validate input
-  if (!email || !password) {
-    return res.status(400).json({
+  if (!email && !password) {
+    return res.json({
       message: "Please provide both email and password.",
     });
   }
 
   try {
-    // Check if the user exists
     const user = await adminLoginAndRegisterModel.findAdminUserByEmail(email);
 
     if (!user) {
-      return res.status(404).json({
+      return res.json({
         message: "Email does not exist.",
       });
     }
 
-    // Compare passwords
     const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (!isValidPassword) {
-      return res.status(401).json({
+      return res.json({
         message: "Invalid password.",
       });
     }
 
-    // Generate JWT token
     const token = jwt.sign(
       { userId: user.id, email: user.email },
       process.env.JWT_SECRET,
       {
-        expiresIn: "30d", // Adjusted expiration format
+        expiresIn: "30d",
       }
     );
 
-    // Successful login response
     return res.status(200).json({
       success: true,
       message: "Login successful.",
@@ -49,7 +45,7 @@ exports.adminUserLogin = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     console.error("Error during login:", error);
-    return res.status(500).json({
+    return res.json({
       success: false,
       message: "Server error. Please try again later.",
     });
@@ -57,14 +53,14 @@ exports.adminUserLogin = asyncHandler(async (req, res) => {
 });
 
 exports.adminUserRegister = asyncHandler(async (req, res) => {
-  const { full_name, email, mobile_number, password } = req.body;
+  const { full_name, email, mobile_number, password,role } = req.body;
 
   //Validation
   if (
     !full_name &&
     !email &&
     !mobile_number &&
-    !password
+    !password&&role
     // || !confirm_password
   ) {
     return res.status(400).json({ message: "All fields are required" });
@@ -87,6 +83,7 @@ exports.adminUserRegister = asyncHandler(async (req, res) => {
       email,
       mobile_number,
       password: hashedPassword,
+      role
     };
 
     await adminLoginAndRegisterModel.adminUserRegister(newRegister);
@@ -96,5 +93,15 @@ exports.adminUserRegister = asyncHandler(async (req, res) => {
   } catch (error) {
     console.error("Database error", error);
     res.json({ message: "Database error", error: error.message });
+  }
+});
+
+exports.meAPI = asyncHandler(async (req, res) => {
+  try {
+    console.log("req.user: ", req.user);
+    res.json({ u: req.user, msg: "sss" });
+  } catch (error) {
+    console.log(error);
+    res.send("An error occured");
   }
 });

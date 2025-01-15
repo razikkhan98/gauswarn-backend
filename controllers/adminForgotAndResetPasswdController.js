@@ -17,8 +17,9 @@ exports.forgetPassword = asyncHandler(async (req, res) => {
       user?.email,
       hostname
     );
-
-    res.status(200).json({ message: "OTP sent your email successfully.", otp });
+    console.log('otp:------ ', otp);
+    
+    res.status(200).json({ message: "OTP sent your email successfully."});
   } catch (error) {
     console.error("Error is sending OTP email:", error);
     res.json({ message: "Internal server error" });

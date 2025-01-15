@@ -152,63 +152,142 @@ exports.getAllTotalSalesMonthlyData = async () => {
 };
 
 exports.getWeeklyMonthlySixMonthlyData = async () => {
-    try {
-      // Calculate current week range
-      const startOfWeek = moment().startOf("week").format("YYYY-MM-DD");
-      const endOfWeek = moment().endOf("week").format("YYYY-MM-DD");
-  
-      // Calculate current month range
-      const startOfMonth = moment().startOf("month").format("YYYY-MM-DD");
-      const endOfMonth = moment().endOf("month").format("YYYY-MM-DD");
-  
-      // Calculate last six months range
-      const startOfSixMonths = moment().subtract(6, "months").startOf("month").format("YYYY-MM-DD");
-      const endOfSixMonths = moment().endOf("month").format("YYYY-MM-DD");
-  
-      return await withConnection(async (connection) => {
-        // Query for weekly data
-        const weeklyQuery = `
+  try {
+    // Calculate current week range
+    const startOfWeek = moment().startOf("week").format("YYYY-MM-DD");
+    const endOfWeek = moment().endOf("week").format("YYYY-MM-DD");
+
+    // Calculate current month range
+    const startOfMonth = moment().startOf("month").format("YYYY-MM-DD");
+    const endOfMonth = moment().endOf("month").format("YYYY-MM-DD");
+
+    // Calculate last six months range
+    const startOfSixMonths = moment()
+      .subtract(6, "months")
+      .startOf("month")
+      .format("YYYY-MM-DD");
+    const endOfSixMonths = moment().endOf("month").format("YYYY-MM-DD");
+
+    return await withConnection(async (connection) => {
+      // Query for weekly data
+      const weeklyQuery = `
           SELECT 
             COUNT(*) AS weekly_total_users, 
             SUM(user_total_amount) AS weekly_total_sales
           FROM organic_farmer_table_payment
           WHERE DATE BETWEEN ? AND ?;
         `;
-  
-        // Query for monthly data
-        const monthlyQuery = `
+
+      // Query for monthly data
+      const monthlyQuery = `
           SELECT 
             COUNT(*) AS monthly_total_users, 
             SUM(user_total_amount) AS monthly_total_sales
           FROM organic_farmer_table_payment
           WHERE DATE BETWEEN ? AND ?;
         `;
-  
-        // Query for last six months' data
-        const sixMonthlyQuery = `
+
+      // Query for last six months' data
+      const sixMonthlyQuery = `
           SELECT 
             COUNT(*) AS six_monthly_total_users, 
             SUM(user_total_amount) AS six_monthly_total_sales
           FROM organic_farmer_table_payment
           WHERE DATE BETWEEN ? AND ?;
         `;
-  
-        // Execute all queries in parallel
-        const [[weeklyData], [monthlyData], [sixMonthlyData]] = await Promise.all([
+
+      // Execute all queries in parallel
+      const [[weeklyData], [monthlyData], [sixMonthlyData]] = await Promise.all(
+        [
           connection.execute(weeklyQuery, [startOfWeek, endOfWeek]),
           connection.execute(monthlyQuery, [startOfMonth, endOfMonth]),
-          connection.execute(sixMonthlyQuery, [startOfSixMonths, endOfSixMonths]),
-        ]);
-  
-        return {
-          week: { start: startOfWeek, end: endOfWeek, data: weeklyData[0] },
-          month: { start: startOfMonth, end: endOfMonth, data: monthlyData[0] },
-          sixMonths: { start: startOfSixMonths, end: endOfSixMonths, data: sixMonthlyData[0] },
-        };
-      });
-    } catch (error) {
-      console.error("Error in getWeeklyMonthlySixMonthlyData:", error);
-      throw error;
-    }
-  };
-  
+          connection.execute(sixMonthlyQuery, [
+            startOfSixMonths,
+            endOfSixMonths,
+          ]),
+        ]
+      );
+
+      return {
+        week: { start: startOfWeek, end: endOfWeek, data: weeklyData[0] },
+        month: { start: startOfMonth, end: endOfMonth, data: monthlyData[0] },
+        sixMonths: {
+          start: startOfSixMonths,
+          end: endOfSixMonths,
+          data: sixMonthlyData[0],
+        },
+      };
+    });
+  } catch (error) {
+    console.error("Error in getWeeklyMonthlySixMonthlyData:", error);
+    throw error;
+  }
+};
+
+exports.getEveryWeeklyMonthlyEverySixMonthlyData = async () => {
+  try {
+    const startOfWeek = moment().startOf("week").format("YYYY-MM-DD");
+    const endOfWeek = moment().endOf("week").format("YYYY-MM-DD");
+
+    const startOfMonth = moment().startOf("month").format("YYYY-MM-DD");
+    const endOfMonth = moment().endOf("month").format("YYYY-MM-DD");
+
+    const startOfSixMonths = moment()
+      .subtract(6, "months")
+      .startOf("month")
+      .format("YYYY-MM-DD");
+    const endOfSixMonths = moment().endOf("month").format("YYYY-MM-DD");
+
+    return await withConnection(async (connection) => {
+      // Query for weekly data grouped by day
+      const weeklyQuery = `
+          SELECT 
+            DATE_FORMAT(DATE, '%Y-%m-%d') AS day, 
+            COUNT(*) AS daily_total_users, 
+            SUM(user_total_amount) AS daily_total_sales
+          FROM organic_farmer_table_payment
+          WHERE DATE BETWEEN ? AND ?
+          GROUP BY day;
+        `;
+
+      // Query for monthly data
+      const monthlyQuery = `
+          SELECT 
+            COUNT(*) AS monthly_total_users, 
+            SUM(user_total_amount) AS monthly_total_sales
+          FROM organic_farmer_table_payment
+          WHERE DATE BETWEEN ? AND ?;
+        `;
+
+      // Query for last six months' data grouped by month
+      const sixMonthlyQuery = `
+          SELECT 
+            DATE_FORMAT(DATE, '%Y-%m') AS month, 
+            COUNT(*) AS monthly_total_users, 
+            SUM(user_total_amount) AS monthly_total_sales
+          FROM organic_farmer_table_payment
+          WHERE DATE BETWEEN ? AND ?
+          GROUP BY month;
+        `;
+
+      const [weeklyData, [monthlyData], sixMonthlyData] = await Promise.all([
+        connection.execute(weeklyQuery, [startOfWeek, endOfWeek]),
+        connection.execute(monthlyQuery, [startOfMonth, endOfMonth]),
+        connection.execute(sixMonthlyQuery, [startOfSixMonths, endOfSixMonths]),
+      ]);
+
+      return {
+        week: { start: startOfWeek, end: endOfWeek, data: weeklyData[0] },
+        month: { start: startOfMonth, end: endOfMonth, data: monthlyData[0] },
+        sixMonths: {
+          start: startOfSixMonths,
+          end: endOfSixMonths,
+          data: sixMonthlyData[0],
+        },
+      };
+    });
+  } catch (error) {
+    console.error("Error in getWeeklyMonthlySixMonthlyData:", error);
+    throw error;
+  }
+};

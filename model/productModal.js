@@ -8,13 +8,14 @@ exports.addProduct = async (
   product_quantity,
   product_stock,
   product_category,
-  product_image
+  product_image,
+  product_website_name
 ) => {
   try {
     return await withConnection(async (connection) => {
       const query = `
-      INSERT INTO organic_farmer_table_product (product_name, product_description, product_price, product_quantity, product_stock, product_category,product_image)
-      VALUES (?, ?, ?, ?, ?, ?,?)
+      INSERT INTO organic_farmer_table_product (product_name, product_description, product_price, product_quantity, product_stock, product_category,product_image,product_website_name)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
       const [result] = await connection.execute(query, [
         product_name,
@@ -24,6 +25,7 @@ exports.addProduct = async (
         product_stock,
         product_category,
         product_image,
+        product_website_name,
       ]);
       return result.insertId;
     });
@@ -68,13 +70,14 @@ exports.updateProduct = async (
   product_quantity,
   product_stock,
   product_category,
-  product_image
+  product_image,
+  product_website_name
 ) => {
   try {
     return await withConnection(async (connection) => {
       const query = `
       UPDATE organic_farmer_table_product
-      SET product_name = ?, product_description = ?, product_price = ?,product_quantity = ?, product_stock = ?, product_category = ?,product_image = ?
+      SET product_name = ?, product_description = ?, product_price = ?,product_quantity = ?, product_stock = ?, product_category = ?, product_image = ?, product_website_name = ?
       WHERE product_id = ?
     `;
       const [result] = await connection.execute(query, [
@@ -85,6 +88,7 @@ exports.updateProduct = async (
         product_stock,
         product_category,
         product_image,
+        product_website_name,
         id,
       ]);
       return result.affectedRows > 0;
