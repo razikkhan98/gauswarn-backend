@@ -39,11 +39,12 @@ exports.getAllReviews = async () => {
 // new
 
 // Get Single Review by ID
-exports.getReviewByIdModal = async (id) => {
+exports.getReviewByIdModal = async (user_id) => {
   try {
     return await withConnection(async (connection) => {
-      const query = "SELECT * FROM organic_farmer_feedback_table WHERE id = ?";
-      const [review] = await connection.execute(query, [id]);
+      const query =
+        "SELECT * FROM organic_farmer_feedback_table WHERE user_id = ?";
+      const [review] = await connection.execute(query, [user_id]);
       return review.length > 0 ? review[0] : null;
     });
   } catch (error) {
@@ -52,20 +53,20 @@ exports.getReviewByIdModal = async (id) => {
 };
 
 // Update Review
-exports.updateReviewModal = async (id, name, email, rating, feedback) => {
+exports.updateReviewModal = async (user_id, name, email, rating, feedback) => {
   try {
     return await withConnection(async (connection) => {
       const query = `
       UPDATE organic_farmer_feedback_table
       SET name = ?, email = ?, rating = ?, feedback = ?
-      WHERE id = ?
+      WHERE user_id = ?
       `;
       const [result] = await connection.execute(query, [
         name,
         email,
         rating,
         feedback,
-        id,
+        user_id,
       ]);
       return result.affectedRows > 0;
     });
@@ -75,11 +76,12 @@ exports.updateReviewModal = async (id, name, email, rating, feedback) => {
 };
 
 // Delete Review
-exports.deleteReviewModal = async (id) => {
+exports.deleteReviewModal = async (user_id) => {
   try {
     return await withConnection(async (connection) => {
-      const query = "DELETE FROM organic_farmer_feedback_table WHERE id = ?";
-      const [result] = await connection.execute(query, [id]);
+      const query =
+        "DELETE FROM organic_farmer_feedback_table WHERE user_id = ?";
+      const [result] = await connection.execute(query, [user_id]);
       return result.affectedRows > 0;
     });
   } catch (error) {
