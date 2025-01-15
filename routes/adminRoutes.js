@@ -65,6 +65,27 @@ router.get("/getAllContact", authMiddleware, contactController.getAllContact);
 router.get("/allfeedback", authMiddleware, feedbackController.getReviews);
 // create feedback
 router.post("/createFeedback", authMiddleware, feedbackController.feedback);
+
+// fetch single feedback by Id
+router.post(
+  "/getSingleFeedbackById/:id",
+  authMiddleware,
+  feedbackController.getReviewById
+);
+
+// fetch single feedback by Id and update
+router.put(
+  "/updateFeedbackById/:id",
+  authMiddleware,
+  feedbackController.updateReviewById
+);
+
+// fetch single feedback by Id and delete
+router.delete(
+  "/deleteFeedbackById/:id",
+  authMiddleware,
+  feedbackController.deleteReviewById
+);
 /** admin feedback end*/
 
 /** user info for payment table*/
