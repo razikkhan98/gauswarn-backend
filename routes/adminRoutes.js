@@ -119,3 +119,6 @@ router.get("/me", authMiddleware, adminLoginAndRegisterController.meAPI);
 router.use(errorHandler);
 
 module.exports = router;
+// backlog
+// ALTER TABLE `organic_farmer_table_product` ADD `product_website_name` VARCHAR(255) NULL DEFAULT NULL AFTER `test`;
+// ALTER TABLE `organic_farmer_admin_user` ADD `role` VARCHAR(255) NULL DEFAULT NULL AFTER `test`;
