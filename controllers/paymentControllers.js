@@ -11,7 +11,8 @@ const {
 
 const jwt = require("jsonwebtoken");
 
-const moment = require('moment')
+const moment = require("moment");
+const { withConnection } = require("../utils/helper");
 
 const addPaymentRecord = (req, res) => {
   const { status, amount } = req.body;
@@ -143,9 +144,6 @@ const updatePaymentStatus = (req, res) => {
 };
 
 const createPaymentAndGenerateUrl = async (req, res) => {
-
-
-
   // const { status, amount, name, mobileNumber } = req.body;
   const {
     user_name,
@@ -158,6 +156,8 @@ const createPaymentAndGenerateUrl = async (req, res) => {
     user_landmark,
     user_pincode,
     user_total_amount,
+    purchase_price,
+    product_quantity,
   } = req.body;
 
   // Validate the payload
@@ -171,39 +171,44 @@ const createPaymentAndGenerateUrl = async (req, res) => {
     !user_house_number ||
     !user_landmark ||
     !user_pincode ||
-    !user_total_amount
+    !user_total_amount ||
+    !purchase_price ||
+    !product_quantity
   ) {
     return res
       .status(400)
       .json({ success: false, message: "All fields are required." });
   }
 
-  const date = moment().format("YYYY-MM-DD")
-  const time = getCurrentTime()
+  const date = moment().format("YYYY-MM-DD");
+  const time = getCurrentTime();
 
   // Convert user_total_amount to paise for PhonePe
   const amountInPaise = user_total_amount * 100;
 
   // Insert user details into the database
-  const userQuery = `INSERT INTO organic_farmer_table_payment (user_name,user_mobile_num, user_email, user_state, user_city, user_country, user_house_number, user_landmark, user_pincode,user_total_amount, date, time)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
+  const userQuery = `INSERT INTO organic_farmer_table_payment (user_name, user_mobile_num, user_email, user_state, user_city, user_country, user_house_number, user_landmark, user_pincode, user_total_amount, purchase_price, product_quantity, date, time)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   try {
-    const [result] = await db.promise().query(userQuery, [
-      user_name,
-      user_mobile_num,
-      user_email,
-      user_state,
-      user_city,
-      user_country,
-      user_house_number,
-      user_landmark,
-      user_pincode,
-      user_total_amount, // Store the original amount in the database
-      date,
-      time
-    ]);
+    const [result] = await withConnection(async (connection) => {
+      return connection.execute(userQuery, [
+        user_name,
+        user_mobile_num,
+        user_email,
+        user_state,
+        user_city,
+        user_country,
+        user_house_number,
+        user_landmark,
+        user_pincode,
+        user_total_amount,
+        purchase_price,
+        product_quantity,
+        date,
+        time,
+      ]);
+    });
 
     // Get the inserted user ID (if needed for future use)
     const userId = result.insertId;
@@ -296,19 +301,18 @@ const createPaymentAndGenerateUrl = async (req, res) => {
   }
 };
 
-
 const getCurrentTime = () => {
   const now = new Date();
   const hours = now.getHours();
   const minutes = now.getMinutes();
   const seconds = now.getSeconds();
 
-  const hoursStr = String(hours).padStart(2, '0');
-  const minutesStr = String(minutes).padStart(2, '0');
-  const secondsStr = String(seconds).padStart(2, '0');
+  const hoursStr = String(hours).padStart(2, "0");
+  const minutesStr = String(minutes).padStart(2, "0");
+  const secondsStr = String(seconds).padStart(2, "0");
 
   return `${hoursStr}:${minutesStr}:${secondsStr}`;
-}
+};
 
 const getPhonePeUrlStatusAndUpdatePayment = async (req, res) => {
   const merchantTransactionId = req?.query?.id;
@@ -341,14 +345,14 @@ const getPhonePeUrlStatusAndUpdatePayment = async (req, res) => {
     const query = `UPDATE organic_farmer_table_payment SET status = ?, paymentDetails = ?, isPaymentPaid = ? WHERE user_id = ?`;
     const isPaymentPaid = paymentStatus === "true";
 
-    const [result] = await db
-      .promise()
-      .query(query, [
+    const [result] = await withConnection(async (connection) => {
+      return connection.execute(query, [
         paymentStatus,
         JSON.stringify(paymentDetails),
         isPaymentPaid,
         tarnId,
       ]);
+    });
 
     if (result === 0) {
       return res
@@ -358,7 +362,6 @@ const getPhonePeUrlStatusAndUpdatePayment = async (req, res) => {
 
     // console.log(response?.data?.code,"response")
     if (response?.data?.code === "PAYMENT_SUCCESS") {
-
       // res.redirect(`http://bhashsms.com/api/sendmsg.php?user=BhashWapAi&pass=Bwa@123&sender=BUZWAP&phone=7000015122&text=bsl_image&priority=wa&stype=normal&htype=image&url=https://i.ibb.co/7XRmyh9/bhash-logo.png`)
 
       return res.redirect(process.env.REDIRECT_URL_TO_SUCCESS_PAGE);
@@ -376,12 +379,7 @@ const getPhonePeUrlStatusAndUpdatePayment = async (req, res) => {
   }
 };
 
-
 module.exports = {
-  addPaymentRecord,
-  updatePaymentStatus,
-  getPhonePeUrl,
-  getPhonePeUrlStatus,
   createPaymentAndGenerateUrl,
   getPhonePeUrlStatusAndUpdatePayment,
 };
