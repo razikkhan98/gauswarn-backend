@@ -31,7 +31,7 @@ exports.adminUserLogin = asyncHandler(async (req, res) => {
     }
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { userId: user.id, email: user.email, userName: user.full_name },
       process.env.JWT_SECRET,
       {
         expiresIn: "30d",
@@ -53,14 +53,15 @@ exports.adminUserLogin = asyncHandler(async (req, res) => {
 });
 
 exports.adminUserRegister = asyncHandler(async (req, res) => {
-  const { full_name, email, mobile_number, password,role } = req.body;
+  const { full_name, email, mobile_number, password, role } = req.body;
 
   //Validation
   if (
     !full_name &&
     !email &&
     !mobile_number &&
-    !password&&role
+    !password &&
+    role
     // || !confirm_password
   ) {
     return res.status(400).json({ message: "All fields are required" });
@@ -83,7 +84,7 @@ exports.adminUserRegister = asyncHandler(async (req, res) => {
       email,
       mobile_number,
       password: hashedPassword,
-      role
+      role,
     };
 
     await adminLoginAndRegisterModel.adminUserRegister(newRegister);
@@ -98,8 +99,10 @@ exports.adminUserRegister = asyncHandler(async (req, res) => {
 
 exports.meAPI = asyncHandler(async (req, res) => {
   try {
-    console.log("req.user: ", req.user);
-    res.json({ u: req.user, msg: "sss" });
+    delete req.user.password;
+    const user = req.user;
+    console.log("user: ", user);
+    res.json({ user, msg: "sss" });
   } catch (error) {
     console.log(error);
     res.send("An error occured");

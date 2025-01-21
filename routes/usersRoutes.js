@@ -39,6 +39,11 @@ router.put("/UpdateFeedbackById/:id", feedbackController.updateReviewById);
 // fetch single feedback by Id and delete
 router.delete("/deleteFeedbackById/:id", feedbackController.deleteReviewById);
 
+/** get all products */
+
+router.get("/getAllProduct", productController.getAllProducts);
+/** get all products */
+
 // testingCSV
 router.get("/getCSV", exportTableToExcel);
 

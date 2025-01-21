@@ -47,4 +47,19 @@ const withConnection = async (callback) => {
   }
 };
 
-module.exports = { createEmailTransporter, withConnection };
+// Function to calculate profit
+const calculateProfit = (sellingPrice, purchase_price, product_quantity) => {
+  const purchasingPrice = product_quantity * purchase_price;
+  console.log("purchasingPrice:---------helper ", purchasingPrice);
+
+  const profitPrice = sellingPrice - purchasingPrice;
+  console.log("profitPrice:-------helper ", profitPrice);
+
+  return profitPrice;
+};
+
+module.exports = {
+  createEmailTransporter,
+  withConnection,
+  calculateProfit,
+};

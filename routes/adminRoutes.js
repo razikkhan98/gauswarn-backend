@@ -107,7 +107,7 @@ router.get(
 /** Caculate data*/
 router.get(
   "/getAllSales",
-  authMiddleware,
+  // authMiddleware,
   CalculateGheeWebAppDataController.getAllSales
 );
 /** Caculate data end*/

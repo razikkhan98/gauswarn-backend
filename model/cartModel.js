@@ -73,11 +73,12 @@ exports.addCartItem = async (cartItem) => {
       product_weight,
       product_quantity,
       product_total_amount,
+      purchase_price,
     } = cartItem;
 
     return await withConnection(async (connection) => {
       const query =
-        "INSERT INTO organic_farmer_table_addtocart (user_id, product_id, product_price, product_weight, product_quantity, product_total_amount) VALUES (?, ?, ?, ?, ?, ?)";
+        "INSERT INTO organic_farmer_table_addtocart (user_id, product_id, product_price, product_weight, product_quantity, product_total_amount, purchase_price) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
       const [results] = await connection.execute(query, [
         user_id || "",
@@ -86,6 +87,7 @@ exports.addCartItem = async (cartItem) => {
         product_weight || "",
         product_quantity || "",
         product_total_amount || "",
+        purchase_price || "",
       ]);
 
       return results; // Return the ID of the inserted item or results if needed

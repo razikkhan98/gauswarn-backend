@@ -1,5 +1,5 @@
 const moment = require("moment/moment");
-const { withConnection } = require("../utils/helper");
+const { withConnection, calculateProfit } = require("../utils/helper");
 
 // Get total users for a specific month
 exports.getMonthlyUserCount = async (month, year) => {
@@ -270,6 +270,29 @@ exports.getEveryWeeklyMonthlyEverySixMonthlyData = async () => {
           GROUP BY month;
         `;
 
+      // Query for monthly data
+      const monthlyQueryPrice = `
+SELECT * FROM organic_farmer_table_payment
+WHERE DATE BETWEEN ? AND ?;
+`;
+      const data = await connection.execute(monthlyQueryPrice, [
+        startOfMonth,
+        endOfMonth,
+      ]);
+
+      let totalProfit = 0;
+
+      for (const d of data[0]) {
+        const singleProductProfit = calculateProfit(
+          d?.user_total_amount,
+          d?.purchase_price,
+          d?.product_quantity
+        );
+
+        totalProfit += singleProductProfit;
+      }
+      console.log("totalProfit: ", totalProfit);
+
       const [weeklyData, [monthlyData], sixMonthlyData] = await Promise.all([
         connection.execute(weeklyQuery, [startOfWeek, endOfWeek]),
         connection.execute(monthlyQuery, [startOfMonth, endOfMonth]),
@@ -284,10 +307,117 @@ exports.getEveryWeeklyMonthlyEverySixMonthlyData = async () => {
           end: endOfSixMonths,
           data: sixMonthlyData[0],
         },
+        monthlyProfit: totalProfit,
       };
     });
   } catch (error) {
     console.error("Error in getWeeklyMonthlySixMonthlyData:", error);
+    throw error;
+  }
+};
+
+exports.getEveryWeeklyMonthlyEverySixMonthlyDataTesting = async () => {
+  try {
+    const startOfWeek = moment().startOf("week").format("YYYY-MM-DD");
+    const endOfWeek = moment().endOf("week").format("YYYY-MM-DD");
+
+    const startOfMonth = moment().startOf("month").format("YYYY-MM-DD");
+    const endOfMonth = moment().endOf("month").format("YYYY-MM-DD");
+
+    const startOfSixMonths = moment()
+      .subtract(6, "months")
+      .startOf("month")
+      .format("YYYY-MM-DD");
+    const endOfSixMonths = moment().endOf("month").format("YYYY-MM-DD");
+
+    return await withConnection(async (connection) => {
+      // Queries
+      const weeklyQuery = `
+          SELECT 
+            DATE_FORMAT(DATE, '%Y-%m-%d') AS day, 
+            COUNT(*) AS daily_total_users, 
+            SUM(user_total_amount) AS daily_total_sales, 
+            SUM(user_cost) AS daily_total_cost
+          FROM organic_farmer_table_payment
+          WHERE DATE BETWEEN ? AND ?
+          GROUP BY day;
+        `;
+
+      const monthlyQuery = `
+          SELECT 
+            COUNT(*) AS monthly_total_users, 
+            SUM(user_total_amount) AS monthly_total_sales, 
+            SUM(user_cost) AS monthly_total_cost
+          FROM organic_farmer_table_payment
+          WHERE DATE BETWEEN ? AND ?;
+        `;
+
+      const sixMonthlyQuery = `
+          SELECT 
+            DATE_FORMAT(DATE, '%Y-%m') AS month, 
+            COUNT(*) AS monthly_total_users, 
+            SUM(user_total_amount) AS monthly_total_sales, 
+            SUM(user_cost) AS monthly_total_cost
+          FROM organic_farmer_table_payment
+          WHERE DATE BETWEEN ? AND ?
+          GROUP BY month;
+        `;
+
+      // Execute queries
+      const [weeklyData, [monthlyData], sixMonthlyData] = await Promise.all([
+        connection.execute(weeklyQuery, [startOfWeek, endOfWeek]),
+        connection.execute(monthlyQuery, [startOfMonth, endOfMonth]),
+        connection.execute(sixMonthlyQuery, [startOfSixMonths, endOfSixMonths]),
+      ]);
+
+      // Calculate profits
+      const calculateProfit = (sales, cost) => {
+        return sales - cost;
+      };
+
+      // Weekly profit
+      weeklyData[0].forEach((day) => {
+        day.daily_profit = calculateProfit(
+          day.daily_total_sales,
+          day.daily_total_cost || 0
+        );
+      });
+
+      // Monthly profit
+      monthlyData[0].monthly_profit = calculateProfit(
+        monthlyData[0].monthly_total_sales,
+        monthlyData[0].monthly_total_cost || 0
+      );
+
+      // Six-monthly profit
+      sixMonthlyData[0].forEach((month) => {
+        month.monthly_profit = calculateProfit(
+          month.monthly_total_sales,
+          month.monthly_total_cost || 0
+        );
+      });
+
+      // Return structured data
+      return {
+        week: {
+          start: startOfWeek,
+          end: endOfWeek,
+          summary: weeklyData[0],
+        },
+        month: {
+          start: startOfMonth,
+          end: endOfMonth,
+          summary: monthlyData[0],
+        },
+        sixMonths: {
+          start: startOfSixMonths,
+          end: endOfSixMonths,
+          summary: sixMonthlyData[0],
+        },
+      };
+    });
+  } catch (error) {
+    console.error("Error in getEveryWeeklyMonthlyEverySixMonthlyData:", error);
     throw error;
   }
 };

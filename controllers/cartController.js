@@ -11,6 +11,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
     product_weight,
     product_quantity,
     product_total_amount,
+    purchase_price,
   } = req.body;
 
   // Validate required fields
@@ -20,7 +21,8 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
     !product_price ||
     !product_weight ||
     !product_quantity ||
-    !product_total_amount
+    !product_total_amount ||
+    !purchase_price
   ) {
     return res.json({
       message: "Please provide all required fields (addToCart)",
@@ -70,6 +72,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
         product_weight,
         product_quantity,
         product_total_amount,
+        purchase_price,
       });
       return res.status(201).json({
         message: "Product added to cart",

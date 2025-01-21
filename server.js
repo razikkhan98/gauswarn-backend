@@ -67,20 +67,6 @@ app.get("/download/:tableName", async (req, res) => {
   }
 });
 
-// // Path to the uploaded file
-// const uploadedFilePath = path.join(__dirname, 'organic_farmer_contact_table.csv');
-
-// // Route to download the uploaded file
-// app.get('/download-file', (req, res) => {
-//   const fileName = 'organic_farmer_contact_table.csv'; // Name of the file to download
-//   res.download(uploadedFilePath, fileName, (err) => {
-//     if (err) {
-//       console.error('Error downloading file:', err.message);
-//       res.status(500).send('Error downloading the file.');
-//     }
-//   });
-// });
-
 // Add other routes
 
 // Error handling middleware

@@ -156,7 +156,8 @@ const createPaymentAndGenerateUrl = async (req, res) => {
     user_landmark,
     user_pincode,
     user_total_amount,
-    status,
+    purchase_price,
+    product_quantity,
   } = req.body;
 
   // Validate the payload
@@ -170,7 +171,9 @@ const createPaymentAndGenerateUrl = async (req, res) => {
     !user_house_number ||
     !user_landmark ||
     !user_pincode ||
-    !user_total_amount
+    !user_total_amount ||
+    !purchase_price ||
+    !product_quantity
   ) {
     return res
       .status(400)
@@ -184,8 +187,8 @@ const createPaymentAndGenerateUrl = async (req, res) => {
   const amountInPaise = user_total_amount * 100;
 
   // Insert user details into the database
-  const userQuery = `INSERT INTO organic_farmer_table_payment (user_name,user_mobile_num, user_email, user_state, user_city, user_country, user_house_number, user_landmark, user_pincode,user_total_amount, date, time)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  const userQuery = `INSERT INTO organic_farmer_table_payment (user_name, user_mobile_num, user_email, user_state, user_city, user_country, user_house_number, user_landmark, user_pincode, user_total_amount, purchase_price, product_quantity, date, time)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   try {
     const [result] = await withConnection(async (connection) => {
@@ -200,6 +203,8 @@ const createPaymentAndGenerateUrl = async (req, res) => {
         user_landmark,
         user_pincode,
         user_total_amount,
+        purchase_price,
+        product_quantity,
         date,
         time,
       ]);
@@ -375,10 +380,6 @@ const getPhonePeUrlStatusAndUpdatePayment = async (req, res) => {
 };
 
 module.exports = {
-  addPaymentRecord,
-  updatePaymentStatus,
-  getPhonePeUrl,
-  getPhonePeUrlStatus,
   createPaymentAndGenerateUrl,
   getPhonePeUrlStatusAndUpdatePayment,
 };
