@@ -23,8 +23,8 @@ const port = process.env.PORT || 5000;
 
 // Middlewares
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "500mb", extended: true }));
 
 // Allow specific origins or all origins
 app.use(
