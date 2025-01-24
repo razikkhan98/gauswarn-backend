@@ -9,6 +9,7 @@ const feedbackController = require("../controllers/feedbackController");
 const adminUserInfoController = require("../controllers/adminUserInfoController");
 const adminForgotAndResetPasswdController = require("../controllers/adminForgotAndResetPasswdController");
 const CalculateGheeWebAppDataController = require("../controllers/CalculateGheeWebAppDataContoller");
+const offlineCustomerController = require("../controllers/offlineCustomerController");
 const { errorHandler } = require("../middlewares/errorHandler");
 const { authMiddleware } = require("../middlewares/authMiddleware");
 
@@ -29,6 +30,8 @@ router.post(
 router.post("/reset", adminForgotAndResetPasswdController.passwordReset);
 
 /** admin auth end */
+
+/** --------------------------------------------------------------------------------------------- */
 
 /** Products routes  * */
 // create
@@ -56,9 +59,13 @@ router.post(
 
 /** Products routes end * */
 
+/** --------------------------------------------------------------------------------------------- */
+
 /** Contact route */
 router.get("/getAllContact", authMiddleware, contactController.getAllContact);
 /** Contact route end */
+
+/** --------------------------------------------------------------------------------------------- */
 
 /** admin feedback*/
 // get All
@@ -107,10 +114,50 @@ router.get(
 /** Caculate data*/
 router.get(
   "/getAllSales",
-  // authMiddleware,
+  authMiddleware,
   CalculateGheeWebAppDataController.getAllSales
 );
 /** Caculate data end*/
+
+/** --------------------------------------------------------------------------------------------- */
+
+/** admin offline customer */
+// get All
+router.get(
+  "/getAllOfflineCustomer",
+  authMiddleware,
+  offlineCustomerController.getAllOfflineCustomers
+);
+// create offline customer
+router.post(
+  "/addOfflineCustomer",
+  authMiddleware,
+  offlineCustomerController.addOfflineCustomer
+);
+
+// fetch single offline customer by Id
+router.post(
+  "/getOfflineCustomerById/:id",
+  authMiddleware,
+  offlineCustomerController.getOfflineCustomerById
+);
+
+// fetch single offline customer by Id and update
+router.put(
+  "/updateOfflineCustomer/:id",
+  authMiddleware,
+  offlineCustomerController.updateOfflineCustomer
+);
+
+// fetch single offline customer by Id and delete
+router.delete(
+  "/deleteOfflineCustomerById/:id",
+  authMiddleware,
+  offlineCustomerController.deleteOfflineCustomerById
+);
+/** admin offline customer end*/
+
+/** --------------------------------------------------------------------------------------------- */
 
 /** get logined in user data pass token */
 router.get("/me", authMiddleware, adminLoginAndRegisterController.meAPI);
@@ -119,6 +166,7 @@ router.get("/me", authMiddleware, adminLoginAndRegisterController.meAPI);
 router.use(errorHandler);
 
 module.exports = router;
+
 // backlog
 // ALTER TABLE `organic_farmer_table_product` ADD `product_website_name` VARCHAR(255) NULL DEFAULT NULL AFTER `test`;
 // ALTER TABLE `organic_farmer_admin_user` ADD `role` VARCHAR(255) NULL DEFAULT NULL AFTER `test`;
