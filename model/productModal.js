@@ -12,6 +12,9 @@ exports.addProduct = async (
   product_website_name
 ) => {
   try {
+    // Convert base64 array to JSON string
+    const productImageJSON = JSON.stringify(product_image);
+
     return await withConnection(async (connection) => {
       const query = `
       INSERT INTO organic_farmer_table_product (product_name, product_description, product_price, product_quantity, product_stock, product_category,product_image,product_website_name)
@@ -24,7 +27,7 @@ exports.addProduct = async (
         product_quantity,
         product_stock,
         product_category,
-        product_image,
+        productImageJSON,
         product_website_name,
       ]);
       return result.insertId;
@@ -74,6 +77,9 @@ exports.updateProduct = async (
   product_website_name
 ) => {
   try {
+    // Convert base64 array to JSON string
+    const productImageJSON = JSON.stringify(product_image);
+
     return await withConnection(async (connection) => {
       const query = `
       UPDATE organic_farmer_table_product
@@ -87,7 +93,7 @@ exports.updateProduct = async (
         product_quantity,
         product_stock,
         product_category,
-        product_image,
+        productImageJSON,
         product_website_name,
         id,
       ]);
