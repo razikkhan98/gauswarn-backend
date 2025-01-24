@@ -4,7 +4,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
+    "start": "nodemon server.js",
     "dev": "nodemon --inspect server.js"
   },
   "author": "Razik khan",
@@ -22,6 +22,7 @@
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",
     "mysql2": "^3.11.5",
+    "nodemailer": "^6.9.16",
     "uuid": "^11.0.3",
     "xlsx": "^0.18.5"
   },
