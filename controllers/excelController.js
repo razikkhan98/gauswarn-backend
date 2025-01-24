@@ -59,8 +59,48 @@ async function exportTableToExcel(tableName) {
     throw error;
   }
 }
+// working
+async function exportTableByMonthToExcel(tableName) {
+  try {
+    return await withConnection(async (connection) => {
+      // Get the first and last dates of the current month
+      const startOfMonth = moment().startOf("month").format("YYYY-MM-DD");
+      const endOfMonth = moment().endOf("month").format("YYYY-MM-DD");
+
+      // SQL query with a filter for the date range
+      const query = `SELECT * FROM ${tableName} WHERE date BETWEEN ? AND ?`;
+
+      // Execute the query with date parameters only
+      const [rows] = await connection.execute(query, [
+        startOfMonth,
+        endOfMonth,
+      ]);
+
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, tableName);
+
+      // Specify the output Excel file path
+      const filePath = path.join(
+        __dirname,
+        `${tableName}_monthly_${moment().format("YYYY_MM")}.csv`
+      );
+
+      // Write the workbook to a file
+      XLSX.writeFile(workbook, filePath);
+
+      console.log(`Excel file created successfully: ${filePath}`);
+      return filePath; // Return the file path
+    });
+  } catch (error) {
+    console.error("Error exporting table to Excel:", error.message);
+    throw error;
+  }
+}
 
 module.exports = {
   exportTableToExcel,
   exportTableByDateToExcel,
+  exportTableByMonthToExcel,
 };

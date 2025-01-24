@@ -11,7 +11,10 @@ dotenv.config();
 const cors = require("cors");
 
 // Connect to the database
-const { exportTableToExcel } = require("./controllers/excelController");
+const {
+  exportTableToExcel,
+  exportTableByMonthToExcel,
+} = require("./controllers/excelController");
 const fs = require("fs");
 const { connectToDatabase } = require("./config/dbConnection");
 
@@ -48,7 +51,7 @@ app.get("/download/:tableName", async (req, res) => {
 
   try {
     // Export the table to an Excel file
-    const filePath = await exportTableToExcel(tableName);
+    const filePath = await exportTableByMonthToExcel(tableName);
 
     // Send the file for download
     res.download(filePath, `${tableName}.csv`, (err) => {
