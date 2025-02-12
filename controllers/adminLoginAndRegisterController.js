@@ -61,7 +61,7 @@ exports.adminUserRegister = asyncHandler(async (req, res) => {
     !email &&
     !mobile_number &&
     !password &&
-    role
+    !role
     // || !confirm_password
   ) {
     return res.status(400).json({ message: "All fields are required" });
@@ -101,7 +101,6 @@ exports.meAPI = asyncHandler(async (req, res) => {
   try {
     delete req.user.password;
     const user = req.user;
-    console.log("user: ", user);
     res.json({ user, msg: "sss" });
   } catch (error) {
     console.log(error);

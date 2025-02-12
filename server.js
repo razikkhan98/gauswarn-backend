@@ -66,6 +66,7 @@ app.get("/download/:tableName", async (req, res) => {
       });
     });
   } catch (error) {
+    console.error("Error exporting the table to Excel:", error);
     res.status(500).send("Error exporting the table to Excel.");
   }
 });

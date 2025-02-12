@@ -73,8 +73,7 @@ const getPhonePeUrl = async (req, res) => {
   };
   try {
     const response = await axios.request(option);
-    console.log("response:phonepe ", response?.data);
-    console.log(response.data.data.instrumentResponse.redirectInfo.url);
+
 
     res.status(200).json({
       massage: "OK",
@@ -110,7 +109,6 @@ const getPhonePeUrlStatus = async (req, res) => {
   };
 
   const response = await axios.request(option);
-  console.log("response:phonepe_status ", response?.data);
 
   if (response.data.success) {
     return res.redirect(process.env.REDIRECT_URL_TO_SUCCESS_PAGE);
@@ -360,7 +358,6 @@ const getPhonePeUrlStatusAndUpdatePayment = async (req, res) => {
         .json({ success: false, message: "Payment record not found." });
     }
 
-    // console.log(response?.data?.code,"response")
     if (response?.data?.code === "PAYMENT_SUCCESS") {
       // res.redirect(`http://bhashsms.com/api/sendmsg.php?user=BhashWapAi&pass=Bwa@123&sender=BUZWAP&phone=7000015122&text=bsl_image&priority=wa&stype=normal&htype=image&url=https://i.ibb.co/7XRmyh9/bhash-logo.png`)
 

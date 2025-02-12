@@ -10,20 +10,20 @@ exports.addProduct = async (req, res) => {
       product_price,
       product_quantity,
       product_stock,
-      product_category,
       product_image,
       product_website_name,
+      product_category	,
     } = req.body;
-    console.log("req.body: ", req.body);
+    console.log(req.body);
     if (
       !product_name &&
       !product_description &&
       !product_price &&
       !product_quantity &&
       !product_stock &&
-      !product_category &&
       !product_image &&
-      !product_website_name
+      !product_website_name &&
+      !product_category
     ) {
       return res.status(400).json({ message: "All fields are required" });
     }
@@ -33,9 +33,9 @@ exports.addProduct = async (req, res) => {
       product_price,
       product_quantity,
       product_stock,
-      product_category,
       product_image,
-      product_website_name
+      product_website_name,
+      product_category
     );
     res.status(201).json({
       success: true,
@@ -84,7 +84,6 @@ exports.updateProduct = async (req, res) => {
       product_price,
       product_quantity,
       product_stock,
-      product_category,
       product_image,
       product_website_name,
     } = req.body;
@@ -95,7 +94,6 @@ exports.updateProduct = async (req, res) => {
       product_price,
       product_quantity,
       product_stock,
-      product_category,
       product_image,
       product_website_name
     );

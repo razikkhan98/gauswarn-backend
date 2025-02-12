@@ -68,7 +68,7 @@ async function exportTableByMonthToExcel(tableName) {
       const endOfMonth = moment().endOf("month").format("YYYY-MM-DD");
 
       // SQL query with a filter for the date range
-      const query = `SELECT * FROM ${tableName} WHERE date BETWEEN ? AND ?`;
+      const query = `SELECT * FROM ${tableName}`;
 
       // Execute the query with date parameters only
       const [rows] = await connection.execute(query, [

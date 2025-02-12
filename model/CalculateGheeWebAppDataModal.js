@@ -291,7 +291,6 @@ WHERE DATE BETWEEN ? AND ?;
 
         totalProfit += singleProductProfit;
       }
-      console.log("totalProfit: ", totalProfit);
 
       const [weeklyData, [monthlyData], sixMonthlyData] = await Promise.all([
         connection.execute(weeklyQuery, [startOfWeek, endOfWeek]),

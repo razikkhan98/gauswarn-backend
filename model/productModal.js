@@ -13,7 +13,8 @@ exports.addProduct = async (
 ) => {
   try {
     // Convert base64 array to JSON string
-    const productImageJSON = JSON.stringify(product_image);
+    const productImageJSON = JSON.stringify(product_image || []);
+    
 
     return await withConnection(async (connection) => {
       const query = `

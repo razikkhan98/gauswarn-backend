@@ -13,6 +13,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
     product_total_amount,
     purchase_price,
   } = req.body;
+  console.log(req.body);
 
   // Validate required fields
   if (

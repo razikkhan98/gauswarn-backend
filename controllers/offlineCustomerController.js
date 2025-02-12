@@ -12,7 +12,6 @@ exports.addOfflineCustomer = async (req, res) => {
       product_quantity,
     } = req.body;
 
-    console.log("Request body: ", req.body);
 
     if (
       !customer_name ||
