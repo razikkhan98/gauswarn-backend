@@ -1,4 +1,4 @@
-const { withConnection } = require("../utils/helper");
+const { withConnection } = require("../../utils/helper");
 
 exports.addOfflineCustomer = async (
   customerName,

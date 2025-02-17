@@ -1,4 +1,4 @@
-const { withConnection } = require("../utils/helper");
+const { withConnection } = require("../../utils/helper");
 
 // Fetch all getAllUserInfo reviews Ghee-web-app single-page payment-table
 exports.getAllUserInfo = async () => {

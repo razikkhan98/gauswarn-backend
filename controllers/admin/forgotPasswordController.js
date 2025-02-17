@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const adminForgotAndResetPasswdModal = require("../model/adminForgotAndResetPasswdModal");
+const forgotPasswordModal = require("../../model/admin/forgotPasswordModal");
 const bcrypt = require("bcryptjs");
 
 exports.forgetPassword = asyncHandler(async (req, res) => {
@@ -7,13 +7,13 @@ exports.forgetPassword = asyncHandler(async (req, res) => {
   const hostname = req.hostname;
 
   try {
-    const user = await adminForgotAndResetPasswdModal.findUserByEmail(email);
+    const user = await forgotPasswordModal.findUserByEmail(email);
     if (!user) {
       return res.json({ message: "Email not found" });
     }
     // console.log(user)
 
-    const otp = await adminForgotAndResetPasswdModal.sendOTPEmail(
+    const otp = await forgotPasswordModal.sendOTPEmail(
       user?.email,
       hostname
     );

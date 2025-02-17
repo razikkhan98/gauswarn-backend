@@ -1,10 +1,12 @@
-const CalculateGheeWebAppDataModal = require("../model/CalculateGheeWebAppDataModal");
+const monthlyReportModal = require("../../model/admin/monthlyReportModal");
 
 exports.getAllSales = async (req, res) => {
   try {
     const data =
-      await CalculateGheeWebAppDataModal.getEveryWeeklyMonthlyEverySixMonthlyData();
+      await monthlyReportModal.getEveryWeeklyMonthlyEverySixMonthlyData();
     res.status(200).json({ data });
+    console.log('data: ', data);
+    
 
   } catch (error) {
     console.error("Error fetching products:", error);

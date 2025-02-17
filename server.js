@@ -1,28 +1,23 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const usersRoutes = require("./routes/usersRoutes");
-const usersPaymentRoute = require("./routes/paymentRoutes");
-
-const adminRoutes = require("./routes/adminRoutes");
-
+const usersRoutes = require("./routes/users/gauswarn/usersRoutes");
+const adminRoutes = require("./routes/admin/adminRoutes");
 const { errorHandler } = require("./middlewares/errorHandler");
 const dotenv = require("dotenv");
 dotenv.config();
 const cors = require("cors");
-
-// Connect to the database
-const {
-  exportTableToExcel,
-  exportTableByMonthToExcel,
-} = require("./controllers/excelController");
-const fs = require("fs");
-const { connectToDatabase } = require("./config/dbConnection");
-
-// Initiate express app
-
 const app = express();
 
 const port = process.env.PORT || 5000;
+const {
+  exportTableToExcel,
+  exportTableByMonthToExcel,
+} = require("./controllers/users/gauswarn/excelController");
+const fs = require("fs");
+const { connectToDatabase } = require("./config/dbConnection");
+
+
+
 
 // Middlewares
 app.use(cors());
@@ -39,12 +34,36 @@ app.use(
 );
 
 // Routes
-
-app.use("/users", usersRoutes, usersPaymentRoute);
+app.use("/users", usersRoutes);
 
 app.use("/admin", adminRoutes);
 
-// Route to handle the download request
+
+
+// Error handling middleware
+app.use(errorHandler);
+
+// Start the server
+async function startServer() {
+  try {
+    await connectToDatabase();
+    app.listen(port, () => {
+      console.log(`Server running on port ${port}`);
+    });
+  } catch (err) {
+    console.error("Failed to start server:", err);
+    process.exit(1);
+  }
+}
+startServer();
+
+
+
+
+
+
+// Route to export a table to an Excel file
+
 app.get("/download/:tableName", async (req, res) => {
   const { tableName } = req.params;
   // const tableName = `organic_farmer_table_payment`
@@ -70,27 +89,3 @@ app.get("/download/:tableName", async (req, res) => {
     res.status(500).send("Error exporting the table to Excel.");
   }
 });
-
-// Add other routes
-
-// Error handling middleware
-app.use(errorHandler);
-
-// Starting the server
-
-// app.listen(port, () => {
-//   console.log(`Server running on port ${port}`);
-// });
-
-async function startServer() {
-  try {
-    await connectToDatabase();
-    app.listen(port, () => {
-      console.log(`Server running on port ${port}`);
-    });
-  } catch (err) {
-    console.error("Failed to start server:", err);
-    process.exit(1);
-  }
-}
-startServer();

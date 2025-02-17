@@ -1,4 +1,4 @@
-const { withConnection } = require("../utils/helper");
+const { withConnection } = require("../../../utils/helper");
 
 // Add Product
 exports.addProduct = async (
@@ -8,19 +8,21 @@ exports.addProduct = async (
   product_quantity,
   product_stock,
   product_category,
-  product_image,
-  product_website_name
+  product_website_name,
+  product_image
+
 ) => {
   try {
     // Convert base64 array to JSON string
-    const productImageJSON = JSON.stringify(product_image || []);
-    
+    const productImageJSON = JSON.stringify(product_image);
 
     return await withConnection(async (connection) => {
       const query = `
-      INSERT INTO organic_farmer_table_product (product_name, product_description, product_price, product_quantity, product_stock, product_category,product_image,product_website_name)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+    INSERT INTO organic_farmer_table_product 
+    (product_name, product_description, product_price, product_quantity, product_stock, product_category, product_website_name , product_image) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+`;
+
       const [result] = await connection.execute(query, [
         product_name,
         product_description,
@@ -28,8 +30,8 @@ exports.addProduct = async (
         product_quantity,
         product_stock,
         product_category,
-        productImageJSON,
         product_website_name,
+        productImageJSON
       ]);
       return result.insertId;
     });

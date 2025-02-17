@@ -1,145 +1,20 @@
 // controllers/paymentController.js
 
 const { default: axios } = require("axios");
-const db = require("../config/dbConnection");
+const db = require("../../../config/dbConnection");
 const { v4: uuidv4 } = require("uuid");
 const crypto = require("crypto");
 const {
   generateChecksumForPhonePe,
   generateMergedKey,
-} = require("../utils/payment.service");
+} = require("../../../utils/payment.service");
 
 const jwt = require("jsonwebtoken");
 
 const moment = require("moment");
-const { withConnection } = require("../utils/helper");
-
-const addPaymentRecord = (req, res) => {
-  const { status, amount } = req.body;
-
-  const query = `INSERT INTO Payments (status, paymentDetails, amount, isPaymentPaid) VALUES (?, ?, ?, ?)`;
-  const paymentDetails = JSON.stringify({});
-
-  db.promise().query(
-    query,
-    [status, paymentDetails, amount, false],
-    (err, result) => {
-      if (err)
-        return res.status(500).json({ success: false, error: err.message });
-      res.json({
-        success: true,
-        message: "Payment record created.",
-        paymentId: result.insertId,
-      });
-    }
-  );
-};
-
-const getPhonePeUrl = async (req, res) => {
-  const { name, mobileNumber, amount } = req.body;
-
-  //   unique in every time
-  const orderId = uuidv4();
-
-  //payment
-  const paymentPayload = {
-    merchantId: process.env.PHONEPE_MERCHANT_ID,
-    merchantUserId: name, // put userId,
-    mobileNumber: mobileNumber,
-    amount: amount * 100,
-    merchantTransactionId: orderId,
-    redirectUrl: `${process.env.REDIRECT_URL_TO_BACKEND_API}/?id=${orderId}`,
-    redirectMode: "POST",
-    paymentInstrument: {
-      type: "PAY_PAGE",
-    },
-  };
-
-  const payload = Buffer.from(JSON.stringify(paymentPayload)).toString(
-    "base64"
-  );
-  const checksum = await generateChecksumForPhonePe(payload);
-  const option = {
-    method: "POST",
-    url: process.env.PHONEPE_MERCHANT_BASE_URL,
-    headers: {
-      accept: "application/json",
-      "Content-Type": "application/json",
-      "X-VERIFY": checksum,
-    },
-    data: {
-      request: payload,
-    },
-  };
-  try {
-    const response = await axios.request(option);
+const { withConnection } = require("../../../utils/helper");
 
 
-    res.status(200).json({
-      massage: "OK",
-      success: true,
-      url: response.data.data.instrumentResponse.redirectInfo.url,
-    });
-  } catch (error) {
-    console.log("error in payment", error);
-    res.status(500).json({ massage: "Failed to initiate payment", error });
-  }
-};
-
-const getPhonePeUrlStatus = async (req, res) => {
-  // app.post("/status", async (req, res) => {
-  const merchantTransactionId = req.query.id;
-
-  const keyIndex = process.env.SALT_INDEX;
-  const string =
-    `/pg/v1/status/${process.env.PHONEPE_MERCHANT_ID}/${merchantTransactionId}` +
-    process.env.PHONEPE_MERCHANT_KEY;
-  const sha256 = crypto.createHash("sha256").update(string).digest("hex");
-  const checksum = sha256 + "###" + keyIndex;
-
-  const option = {
-    method: "GET",
-    url: `${process.env.PHONEPE_MERCHANT_STATUS_URL}/${process.env.PHONEPE_MERCHANT_ID}/${merchantTransactionId}`,
-    headers: {
-      accept: "application/json",
-      "Content-Type": "application/json",
-      "X-VERIFY": checksum,
-      "X-MERCHANT-ID": process.env.PHONEPE_MERCHANT_ID,
-    },
-  };
-
-  const response = await axios.request(option);
-
-  if (response.data.success) {
-    return res.redirect(process.env.REDIRECT_URL_TO_SUCCESS_PAGE);
-  } else {
-    return res.redirect(process.env.REDIRECT_URL_TO_FAILURE_PAGE);
-  }
-};
-
-/**
- * using this apis
- * */
-const updatePaymentStatus = (req, res) => {
-  const { paymentId, status, paymentDetails } = req.body;
-  const query = `UPDATE Payments SET status = ?, paymentDetails = ?, isPaymentPaid = ? WHERE id = ?`;
-  const isPaymentPaid = status === "PAID";
-
-  db.promise().query(
-    query,
-    [status, JSON.stringify(paymentDetails), isPaymentPaid, paymentId],
-    (err, result) => {
-      if (err)
-        return res.status(500).json({ success: false, error: err.message });
-      if (result.affectedRows === 0)
-        return res
-          .status(404)
-          .json({ success: false, message: "Payment record not found." });
-
-      res.json({ success: true, message: "Payment status updated." });
-    }
-  );
-};
 
 const createPaymentAndGenerateUrl = async (req, res) => {
   // const { status, amount, name, mobileNumber } = req.body;
@@ -246,6 +121,7 @@ const createPaymentAndGenerateUrl = async (req, res) => {
         type: "PAY_PAGE",
       },
     };
+    console.log('paymentPayload: ', paymentPayload);
 
     // Encode the payload into Base64 format
     const payload = Buffer.from(JSON.stringify(paymentPayload)).toString(
@@ -271,6 +147,8 @@ const createPaymentAndGenerateUrl = async (req, res) => {
 
     // Make the API request to PhonePe
     const response = await axios.request(option);
+    console.log('response: ', response);
+
 
     // Extract the redirect URL from PhonePe's response
     const redirectUrl = response.data.data.instrumentResponse.redirectInfo.url;

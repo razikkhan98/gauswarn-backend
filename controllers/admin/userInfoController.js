@@ -1,6 +1,6 @@
 // Get All Products
 
-const adminUserInfoModal = require("../model/adminUserInfoModal");
+const adminUserInfoModal = require("../../model/admin/userInfoModal");
 const asyncHandler = require("express-async-handler");
 
 exports.getAllUserInfo = asyncHandler(async (req, res) => {
