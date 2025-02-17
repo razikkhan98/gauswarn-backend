@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const usersRoutes = require("./routes/users/gauswarn/usersRoutes");
 const adminRoutes = require("./routes/admin/adminRoutes");
+const rajlaxmiRoutes = require("./routes/users/rajlaxmi/rajlaxmiRoutes");
 const { errorHandler } = require("./middlewares/errorHandler");
 const dotenv = require("dotenv");
 dotenv.config();
@@ -38,7 +39,7 @@ app.use("/users", usersRoutes);
 
 app.use("/admin", adminRoutes);
 
-
+app.use("/rajlaxmi", rajlaxmiRoutes)
 
 // Error handling middleware
 app.use(errorHandler);
