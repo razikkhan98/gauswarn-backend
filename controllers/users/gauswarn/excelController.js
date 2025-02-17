@@ -2,8 +2,7 @@ const XLSX = require("xlsx");
 const fs = require("fs");
 const path = require("path");
 const moment = require("moment");
-const { withConnection } = require("../utils/helper");
-
+const { withConnection } = require("../../../utils/helper");
 async function exportTableByDateToExcel(tableName) {
   try {
     return await withConnection(async (connection) => {
@@ -68,7 +67,7 @@ async function exportTableByMonthToExcel(tableName) {
       const endOfMonth = moment().endOf("month").format("YYYY-MM-DD");
 
       // SQL query with a filter for the date range
-      const query = `SELECT * FROM ${tableName} WHERE date BETWEEN ? AND ?`;
+      const query = `SELECT * FROM ${tableName}`;
 
       // Execute the query with date parameters only
       const [rows] = await connection.execute(query, [

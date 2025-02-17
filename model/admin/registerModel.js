@@ -1,4 +1,4 @@
-const { withConnection } = require("../utils/helper");
+const { withConnection } = require("../../utils/helper");
 
 exports.findAdminUserByEmail = async (email) => {
   try {

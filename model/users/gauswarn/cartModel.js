@@ -1,7 +1,7 @@
 // models/cartModel.js
 
 const moment = require("moment");
-const { withConnection } = require("../utils/helper");
+const { withConnection } = require("../../../utils/helper");
 
 // Find a cart item by product_id and user_id
 
@@ -14,11 +14,7 @@ exports.findCartItem = async (product_id, user_id) => {
       const [rows] = await connection.execute(query, [product_id, user_id]);
 
       // Log the results for debugging purposes
-      console.log(
-        "results:findCartItem ",
-        rows,
-        moment().format("MMMM Do YYYY, h:mm:ss a")
-      );
+   
 
       // Return the results (assuming you want the first row)
       return rows;
@@ -36,12 +32,7 @@ exports.findCartItem = async (product_id, user_id) => {
         const [rows] = await connection.execute(query, [product_id, user_id]);
 
         // Log the results for debugging purposes
-        console.log(
-          "results:findCartItem ",
-          rows,
-          moment().format("MMMM Do YYYY, h:mm:ss a")
-        );
-
+       
         // Return the results (assuming you want the first row)
         return rows;
       });
@@ -53,12 +44,6 @@ exports.findCartItem = async (product_id, user_id) => {
       );
     }
 
-    // Log any errors that occur during the query execution
-    console.log(
-      "error:findCartItem1-------------1 ",
-      error,
-      moment().format("MMMM Do YYYY, h:mm:ss a")
-    );
   }
 };
 

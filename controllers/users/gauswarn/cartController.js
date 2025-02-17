@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const cartModel = require("../model/cartModel"); // Make sure to import your cart model
+const cartModel = require("../../../model/users/gauswarn/cartModel"); // Make sure to import your cart model
 const moment = require("moment");
 
 // Add to Cart Endpoint
@@ -32,17 +32,9 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
 
   try {
     // Check if the product is already in the user's cart
-    console.log(
-      "product_id: ",
-      product_id,
-      moment().format("MMMM Do YYYY, h:mm:ss a")
-    );
+  
     const cartItems = await cartModel.findCartItem(product_id, user_id); // Assuming it returns an array
-    console.log(
-      "cartItems:----- ",
-      cartItems,
-      moment().format("MMMM Do YYYY, h:mm:ss a")
-    );
+   
 
     if (!cartItems?.length && cartItems?.length > 0) {
       // If the product is already in the cart (cartItems is an array)
@@ -81,11 +73,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
     }
   } catch (error) {
     // Catch any errors and send an appropriate response
-    console.error(
-      "Error while adding to cart:addToCart",
-      error,
-      moment().format("MMMM Do YYYY, h:mm:ss a")
-    );
+   
     next(error);
     return res.json({
       message: "Server error, failed to add to cart",
@@ -154,11 +142,7 @@ exports.updateFromCart = asyncHandler(async (req, res, next) => {
       date: moment().format("MMMM Do YYYY, h:mm:ss a"),
     });
   } catch (error) {
-    console.error(
-      "Error while updating cart:",
-      error,
-      moment().format("MMMM Do YYYY, h:mm:ss a")
-    );
+  
     next(error);
     return res.json({
       message: "Server error, failed to update cart",

@@ -1,9 +1,8 @@
-const { withConnection } = require("../utils/helper");
+const { withConnection } = require("../../../utils/helper");
 
 exports.addReview = async (name, email, rating, feedback) => {
   try {
     return await withConnection(async (connection) => {
-      console.log("Connecting to database...");
       const query = `
         INSERT INTO organic_farmer_feedback_table (name, email, rating, feedback)
         VALUES (?, ?, ?, ?)

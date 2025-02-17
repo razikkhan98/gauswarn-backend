@@ -1,4 +1,4 @@
-const db = require("../config/dbConnection");
+const db = require("../../../config/dbConnection");
 
 // Example usage
 // insertPayment("Completed", { cardNumber: "**** **** **** 1234" }, 150.75, true);

@@ -1,7 +1,7 @@
 const {
   forgetPasswordTemplate,
-} = require("../emailTemplates/forgetPasswordTemplate");
-const { createEmailTransporter, withConnection } = require("../utils/helper");
+} = require("../../emailTemplates/forgetPasswordTemplate");
+const { createEmailTransporter, withConnection } = require("../../utils/helper");
 
 //generate OTP 6 digits
 const generateOTP = () => {

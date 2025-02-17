@@ -1,5 +1,5 @@
 const moment = require("moment/moment");
-const { withConnection, calculateProfit } = require("../utils/helper");
+const { withConnection, calculateProfit } = require("../../utils/helper");
 
 // Get total users for a specific month
 exports.getMonthlyUserCount = async (month, year) => {
@@ -291,13 +291,34 @@ WHERE DATE BETWEEN ? AND ?;
 
         totalProfit += singleProductProfit;
       }
-      console.log("totalProfit: ", totalProfit);
 
       const [weeklyData, [monthlyData], sixMonthlyData] = await Promise.all([
         connection.execute(weeklyQuery, [startOfWeek, endOfWeek]),
         connection.execute(monthlyQuery, [startOfMonth, endOfMonth]),
         connection.execute(sixMonthlyQuery, [startOfSixMonths, endOfSixMonths]),
       ]);
+
+      // get the total order in monthly database
+
+      const totalOrdersQuery = `
+  SELECT COUNT(*) AS total_orders 
+  FROM organic_farmer_table_payment
+  WHERE DATE BETWEEN ? AND ?;
+`;
+
+      const [totalOrders] = await connection.execute(totalOrdersQuery, [
+        startOfMonth,
+        endOfMonth,
+      ]);
+
+      // get the Total Products  database
+      const totalProductsQuery = `
+            SELECT COUNT(*) AS total_products
+            FROM organic_farmer_table_product;
+          `;
+
+      const [totalProducts] = await connection.execute(totalProductsQuery);
+      console.log("totalProducts: ", totalProducts);
 
       return {
         week: { start: startOfWeek, end: endOfWeek, data: weeklyData[0] },
@@ -308,6 +329,8 @@ WHERE DATE BETWEEN ? AND ?;
           data: sixMonthlyData[0],
         },
         monthlyProfit: totalProfit,
+        totalOrders: totalOrders,
+        totalProducts: totalProducts,
       };
     });
   } catch (error) {

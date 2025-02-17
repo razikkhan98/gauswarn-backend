@@ -1,5 +1,5 @@
 // controllers/productController.js
-const productModel = require("../model/productModal");
+const productModel = require("../../../model/users/gauswarn/productModal");
 
 // Add Product
 exports.addProduct = async (req, res) => {
@@ -10,32 +10,36 @@ exports.addProduct = async (req, res) => {
       product_price,
       product_quantity,
       product_stock,
-      product_category,
-      product_image,
       product_website_name,
+      product_category	,
+      product_image
+
     } = req.body;
-    console.log("req.body: ", req.body);
+    console.log('req.body: ', req.body);
     if (
       !product_name &&
       !product_description &&
       !product_price &&
       !product_quantity &&
       !product_stock &&
-      !product_category &&
-      !product_image &&
-      !product_website_name
+      !product_website_name &&
+      !product_category&&
+      !product_image
     ) {
       return res.status(400).json({ message: "All fields are required" });
     }
+
+
+
     const productId = await productModel.addProduct(
       product_name,
       product_description,
       product_price,
       product_quantity,
       product_stock,
+      product_website_name,
       product_category,
-      product_image,
-      product_website_name
+      product_image
     );
     res.status(201).json({
       success: true,
@@ -84,7 +88,6 @@ exports.updateProduct = async (req, res) => {
       product_price,
       product_quantity,
       product_stock,
-      product_category,
       product_image,
       product_website_name,
     } = req.body;
@@ -95,7 +98,6 @@ exports.updateProduct = async (req, res) => {
       product_price,
       product_quantity,
       product_stock,
-      product_category,
       product_image,
       product_website_name
     );
