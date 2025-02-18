@@ -70,7 +70,7 @@ app.get("/download/:tableName", async (req, res) => {
 
   try {
     // Export the table to an Excel file
-    const filePath = await exportTableByMonthToExcel(tableName);
+    const filePath = await exportTableToExcel(tableName);
 
     // Send the file for download
     res.download(filePath, `${tableName}.csv`, (err) => {
