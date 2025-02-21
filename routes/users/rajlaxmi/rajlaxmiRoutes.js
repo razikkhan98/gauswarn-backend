@@ -6,6 +6,8 @@ const registerController = require("../../../controllers/users/rajlaxmi/register
 const loginController =require("../../../controllers/users/rajlaxmi/loginController");
 const forgotPasswordController = require("../../../controllers/users/rajlaxmi/forgotPasswordController");
 const addtocartController = require("../../../controllers/users/rajlaxmi/addtocartController");
+const contactController  = require("../../../controllers/users/rajlaxmi/contactController");
+const feedbackController = require("../../../controllers/users/rajlaxmi/feedbackController");
 
 //  // Routes
 
@@ -24,11 +26,16 @@ router.post("/login", loginController.userLogin);
 // Add To Cart
 router.post("/user/addtocart", addtocartController.addToCart);
 
-// User Add to cart remove
-router.delete("/removecart", addtocartController.removeFromCart);
+// // User Add to cart remove
+// router.delete("/removecart", addtocartController.removeFromCart);
 
-// User Update cart item
-router.put("/updateCart", addtocartController.updateFromCart);
+// //  Update cart item
+// router.put("/updateCart", addtocartController.updateFromCart);
 
+// Contact
+router.post("/contact", contactController.userContact);
+
+// Feedback
+router.post("/feedback", feedbackController.feedback);
 
 module.exports = router;

@@ -9,7 +9,7 @@ const { createEmailTransporter, connectToDatabase } = require("../../../utils/he
   const forgotPassword = async (otp) => {
     try {
       const connection = await connectToDatabase();
-      const query = `INSERT INTO rajlaxmi_user_table (otp) VALUES (?)`; 
+      const query = `INSERT INTO rajlaxmi_user (otp) VALUES (?)`; 
       await connection.execute(query, [otp]);
       console.log("OTP stored successfully");
     } catch (error) {
@@ -65,7 +65,7 @@ const { createEmailTransporter, connectToDatabase } = require("../../../utils/he
   exports.findUserByEmail = async (user_email) => {
     try {
         const connection = await connectToDatabase();
-        const query = `SELECT * FROM rajlaxmi_user_table WHERE email = ?`;
+        const query = `SELECT * FROM rajlaxmi_user WHERE email = ?`;
         const [rows] = await connection.execute(query, [user_email]);
         return rows[0] || null;
       } catch (error) {
@@ -77,7 +77,7 @@ const { createEmailTransporter, connectToDatabase } = require("../../../utils/he
   exports.findUserOTP = async (otp) => {
     try {
         const connection = await connectToDatabase();
-        const query = `SELECT * FROM rajlaxmi_user_table WHERE otp = ?`;
+        const query = `SELECT * FROM rajlaxmi_user WHERE otp = ?`;
         const [rows] = await connection.execute(query, [otp]);
         return rows[0] || null;
     } catch (error) {
@@ -91,7 +91,7 @@ const { createEmailTransporter, connectToDatabase } = require("../../../utils/he
 /// Re-set password
 exports.resetPassword = async ( user_email, hashedPassword) => {
   
-  const query = `UPDATE rajlaxmi_user_table SET password = ? ,otp = ? , WHERE email = ? `;
+  const query = `UPDATE rajlaxmi_user SET password = ? ,otp = ? , WHERE email = ? `;
   const [rows] = await dbConnection.promise().query(query, [hashedPassword ,user_email]);
   if(rows.affectedRows > 0){
       return { message: "Password reset sucessfully"};

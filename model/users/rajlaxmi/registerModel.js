@@ -5,7 +5,7 @@ const { connectToDatabase } = require("../../../config/dbConnection");  // Ensur
 exports.findUserByEmail = async (user_email) => {
   try {
     const connection = await connectToDatabase();
-    const query = 'SELECT * FROM rajlaxmi_user_table WHERE user_email = ?'; // Ensure correct table name
+    const query = 'SELECT * FROM rajlaxmi_user WHERE user_email = ?'; // Ensure correct table name
     const [rows] = await connection.query(query, [user_email]);
     return rows[0] || null; // Return the first row if found, or null
 
@@ -19,7 +19,7 @@ exports.findUserByEmail = async (user_email) => {
 exports.findUserByPhone = async (user_number) => {
   try {
     const connection = await connectToDatabase();
-    const query = 'SELECT * FROM rajlaxmi_user_table WHERE user_number = ?'; // Ensure correct table name
+    const query = 'SELECT * FROM rajlaxmi_user WHERE user_number = ?'; // Ensure correct table name
     const [rows] = await connection.query(query, [user_number]);
     return rows[0] || null; // Return the first row if found, or null
 
@@ -48,7 +48,7 @@ exports.registerUser = async (userData) => {
   try {
     const connection = await connectToDatabase();
     const query = `
-  INSERT INTO rajlaxmi_user_table (
+  INSERT INTO rajlaxmi_user (
       uid,    
       user_first_name, 
       user_last_name,

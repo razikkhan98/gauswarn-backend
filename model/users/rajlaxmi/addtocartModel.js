@@ -13,7 +13,7 @@ exports.findCartItem = async (product_id, uid) => {
     try {
       // Ensure to await the query to resolve the promise
       const connection = await connectToDatabase();
-        const query =`SELECT * FROM rajlaxmi_addtocart_table WHERE product_id = ? AND uid = ?`  ;
+        const query =`SELECT * FROM rajlaxmi_addtocart WHERE product_id = ? AND uid = ?`  ;
         const [rows] = await connection.execute(query, [product_id, uid ]);
        return rows.length>0 ? rows[0]: null;
 
@@ -44,7 +44,7 @@ exports.addCartItem = async (cartItem) => {
 
         
         const connection = await connectToDatabase();
-        const query = `INSERT INTO rajlaxmi_addtocart_table (
+        const query = `INSERT INTO rajlaxmi_addtocart (
           uid,  
           product_id,
           product_name,
@@ -86,7 +86,7 @@ exports.updateCartItem = async (
         const connection = await connectToDatabase();
         
         const query =
-            `UPDATE rajlaxmi_addtocart_table 
+            `UPDATE rajlaxmi_addtocart 
             SET product_quantity = ?, product_total_amount = ? WHERE product_id = ? AND uid = ? AND product_name = ?`;
 
         const [results] = await connection.execute(query, [
@@ -114,7 +114,7 @@ exports.removeFromCart = async (uid, product_id) => {
     try {
         const connection = await connectToDatabase();
         const query =
-            `DELETE FROM rajlaxmi_addtocart_table WHERE product_id = ? AND uid = ?`;
+            `DELETE FROM rajlaxmi_addtocart WHERE product_id = ? AND uid = ?`;
 
         const [result] = await connection.execute(query, [uid, product_id]);
         console.log("removeFromCart ", result);
