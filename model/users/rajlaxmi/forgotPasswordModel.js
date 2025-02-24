@@ -43,7 +43,7 @@ const { createEmailTransporter, connectToDatabase } = require("../../../utils/he
   
       const mailOptions = {
         from: process.env.SMTP_SIW_USER,
-        to:"nabirkhan1662@gmail.com",
+        to:"",
         subject: "Forget Password",
         text: `Your OTP for resetting your password is: ${otp}`,
         html: forgetPasswordTemplate(otp, hostname),

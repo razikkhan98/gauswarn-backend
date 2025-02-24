@@ -3,6 +3,7 @@ const { connectToDatabase } = require("../../../config/dbConnection");
 exports.userContact = async(contactTable) => {
     try{
     const {
+     uid,
      user_name,
      user_email,
      user_number,
@@ -11,10 +12,12 @@ exports.userContact = async(contactTable) => {
     }=contactTable;
 
     const connection = await connectToDatabase();
-    const query = `INSERT INTO rajlaxmi_contact (user_name, user_email,
-    user_number, title, message) VALUES(?, ?, ?, ?, ?)`;
+    const query = `INSERT INTO rajlaxmi_contact (
+    uid, user_name, user_email, user_number, title, message) 
+    VALUES(?, ?, ?, ?, ?, ?)`;
 
     const [results] = await connection.execute(query,[
+        uid,
         user_name,
         user_email,
         user_number,

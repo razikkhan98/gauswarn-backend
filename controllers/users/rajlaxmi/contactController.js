@@ -4,6 +4,7 @@ const contactModel = require("../../../model/users/rajlaxmi/contactModel");
 exports.userContact = asyncHandler(async(req ,res)=>{
    try{
     const {
+      uid,
       user_name,
       user_email,
       user_number,
@@ -12,12 +13,13 @@ exports.userContact = asyncHandler(async(req ,res)=>{
     }=req.body;
 
 //Validation
-if(!user_name && !user_email && !user_number && !title && !message){
+if(!uid && !user_name && !user_email && !user_number && !title && !message){
   return res.status(400).json({message: "Please provide all fileds are required"});
 }
 
 // New user contact
 const newContact = {
+    uid,
     user_name,
     user_email,
     user_number,
