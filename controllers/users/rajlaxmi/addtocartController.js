@@ -112,8 +112,8 @@ exports.addToCart = asyncHandler(async (req, res) => {
 
 
 
-         // Delete add to cart
-         exports.removeFromCart = asyncHandler(async (req, res, next) => {
+     // Delete add to cart
+     exports.removeFromCart = asyncHandler(async (req, res, next) => {
           try {
            const {uid , product_id } = req.body;  
         
@@ -143,4 +143,15 @@ exports.addToCart = asyncHandler(async (req, res) => {
           }
         });
         
+    // Get All Products
+    exports.getAllCarts = async (req, res) => {
+      try {
+        const addtocart = await addtocartModel.getAllCarts();
+        
+        res.status(200).json({ addtocart });
+      } catch (error) {
+        console.error("Error fetching cart:", error);
+        res.json({ error: "Failed to fetch cart" });
+      }
+    };
      

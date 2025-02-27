@@ -126,3 +126,17 @@ exports.removeFromCart = async (uid, product_id) => {
         throw error;
     }
 };
+
+
+// Get All Carts
+exports.getAllCarts = async () => {
+    try {
+        const connection = await connectToDatabase();
+        const query = "SELECT * FROM rajlaxmi_addtocart";
+        const [carts] = await connection.execute(query);
+        return carts;
+      
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
