@@ -3,30 +3,26 @@ const { connectToDatabase } = require("../../../config/dbConnection");
 
 // Check if cart item exists
 exports.findCartItem = async (product_id, uid) => {
-    console.log('uid: ', uid);
-    console.log('product_id: ', product_id);
-    // if (product_id === undefined || uid === undefined) {
-    //     throw new Error('Product ID or UID cannot be undefined');
-    // }
-
-
+    // console.log('uid: ', uid);
+    // console.log('product_id: ', product_id);
+    // // if (product_id === undefined || uid === undefined) {
+    // //     throw new Error('Product ID or UID cannot be undefined');
+    // // }
     try {
-      // Ensure to await the query to resolve the promise
       const connection = await connectToDatabase();
-        const query =`SELECT * FROM rajlaxmi_addtocart WHERE product_id = ? AND uid = ?`  ;
+      const query =`SELECT * FROM rajlaxmi_addtocart WHERE product_id = ? AND uid = ?`;
         const [rows] = await connection.execute(query, [product_id, uid ]);
        return rows.length>0 ? rows[0]: null;
-
     } catch (error) {
         console.error("Error in findCartItem:", error);
         throw error; 
   
     }
-    finally {
-        if (connection) {
-          connection.release(); // If using a pool, release the connection
-        }
-    }
+    // finally {
+    //     if (connection) {
+    //       connection.release(); // If using a pool, release the connection
+    //     }
+    // }
   };
 
 // Add a new item to the cart

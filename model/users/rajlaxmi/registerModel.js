@@ -1,13 +1,12 @@
-const { connectToDatabase } = require("../../../config/dbConnection");  // Ensure this imports your DB connection
-
+const { connectToDatabase } = require("../../../config/dbConnection"); 
 
 // Find a user by email
 exports.findUserByEmail = async (user_email) => {
   try {
     const connection = await connectToDatabase();
-    const query = 'SELECT * FROM rajlaxmi_user WHERE user_email = ?'; // Ensure correct table name
+    const query = 'SELECT * FROM rajlaxmi_user WHERE user_email = ?'; 
     const [rows] = await connection.query(query, [user_email]);
-    return rows[0] || null; // Return the first row if found, or null
+    return rows[0] || null; 
 
   } catch (error) {
     console.log("error: ", error);
@@ -19,9 +18,9 @@ exports.findUserByEmail = async (user_email) => {
 exports.findUserByPhone = async (user_number) => {
   try {
     const connection = await connectToDatabase();
-    const query = 'SELECT * FROM rajlaxmi_user WHERE user_number = ?'; // Ensure correct table name
+    const query = 'SELECT * FROM rajlaxmi_user WHERE user_number = ?'; 
     const [rows] = await connection.query(query, [user_number]);
-    return rows[0] || null; // Return the first row if found, or null
+    return rows[0] || null; 
 
   } catch (error) {
     console.log("error: ", error);

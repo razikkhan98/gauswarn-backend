@@ -1,8 +1,9 @@
 // rajlaxmi // controller //payment
 
-// const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const paymentModel = require("../../../model/users/rajlaxmi/paymentModel");
+// const addtocartModel = require("../../../model/users/rajlaxmi/addtocartModel");
+
 
 exports.userPayment = async (req, res) => {
     const {
@@ -18,9 +19,12 @@ exports.userPayment = async (req, res) => {
         user_total_amount,
         purchase_price,
         product_quantity,
+        // addtocart
     } = req.body;
+
     console.log(req.body);
 
+    // Validation
     if (
         !uid ||
         !user_name ||
@@ -33,15 +37,21 @@ exports.userPayment = async (req, res) => {
         !user_house_number ||
         !user_total_amount ||
         !purchase_price ||
-        !product_quantity
-    ) {
+        !product_quantity 
+        // !addtocart  
+    ){
         return res.status(400).json({ success: false, message: "All fields are required." });
     }
 
-    const amountInPaise = user_total_amount * 100; 
+     const amountInPaise = user_total_amount * 100; 
 
     try {
-        // Create a JWT 
+        //   const cartItems = await addtocartModel.findCartItem(uid);
+        // if (!cartItems || cartItems.length === 0) {
+        //     return res.status(400).json({ success: false, message: "No items in cart" });
+        // }
+
+        // Create JWT token for the payment 
         const token = jwt.sign(
             {
                 uid,
@@ -49,8 +59,7 @@ exports.userPayment = async (req, res) => {
                 user_email,
                 amountInPaise,
             },
-            process.env.JWT_SECRET, 
-            { expiresIn: "1hr" } 
+            process.env.JWT_SECRET, { expiresIn: "1hr" } 
         );
 
         // Save payment details into the database
@@ -67,17 +76,27 @@ exports.userPayment = async (req, res) => {
             user_total_amount,
             purchase_price,
             product_quantity,
-            token
-        }
-          await paymentModel.userPayment(paymentDetails);
-           return res.json({
+            // addtocart
+        };
+
+        // Save payment 
+        await paymentModel.userPayment(paymentDetails);
+
+        return res.json({
             success: true,
             message: "Payment done successfully",
-            token
+            token,
+            billing_details: {  
+                user_state,
+                user_city,
+                user_country,
+                user_landmark,
+                user_house_number,
+                total_amount: user_total_amount
+            },
+            // cart_items:cartItems
         });
-
     } catch (error) {
-        
         console.error("Error during payment process:", error);
         return res.status(500).json({
             success: false,
@@ -86,4 +105,3 @@ exports.userPayment = async (req, res) => {
         });
     }
 };
-

@@ -12,35 +12,36 @@ exports.addToCart = asyncHandler(async (req, res) => {
     product_quantity,
     product_total_amount,
   } = req.body;
-  
   // Validate required fields
   if (
-      !uid ||
-      !product_id ||
-      !product_name ||
-      !product_price ||
-      !product_weight ||
-      !product_quantity ||
-      !product_total_amount
-    ) {
-        return res.status(400)
-        .json({ message: "Please provide all required fields" });
+    !uid ||
+    !product_id ||
+    !product_name ||
+    !product_price ||
+    !product_weight ||
+    !product_quantity ||
+    !product_total_amount
+  ) {
+    return res.status(400)
+    .json({ message: "Please provide all required fields" });
   }
   
   try {
-      // Check if the product is already in the user's cart
-      const cartItems = await addtocartModel.findCartItem(product_id, uid); 
+    // Check if the product is already in the user's cart
+    const cartItems = await addtocartModel.findCartItem(product_id, uid); 
+    
+    if (Array.isArray(cartItems)&& cartItems.length  > 0) {
       
-      if (cartItems.length  > 0) {
+      const cartItem = cartItems[0];
+      
+      const newQuantity = (cartItem?.product_quantity || 0) + product_quantity;
+      const newTotalAmount = (cartItem?.product_total_amount || 0)+ product_total_amount;
+      
+      // console.log("newQuantity" ,newQuantity);
+      // console.log("newTotalAmount" ,newTotalAmount);
           
-           const cartItem = cartItems[0];
-     
-           const newQuantity = cartItem?.product_quantity + product_quantity;
-           const newTotalAmount =
-             cartItem?.product_total_amount + product_total_amount;
-     
-           // Update the cart item in the database
-           await addtocartModel.updateCartItem(
+      // Update the cart item in the database
+          const updateItem = await addtocartModel.updateCartItem(
              uid,
              product_id,
              product_name,
@@ -51,7 +52,7 @@ exports.addToCart = asyncHandler(async (req, res) => {
          } else {
            
           // If the product is not in the cart, create a new entry
-           await addtocartModel.addCartItem({
+           const addNewCart =  await addtocartModel.addCartItem({
              uid,
              product_id,
              product_name,
@@ -60,6 +61,8 @@ exports.addToCart = asyncHandler(async (req, res) => {
              product_quantity,
              product_total_amount
            });
+           console.log(addNewCart)
+            //  await addtocartModel.addToCart(addNewCart);
            return res.status(201).json({message: "Product added to cart"});
          }
        } catch (error) {        
@@ -75,7 +78,6 @@ exports.addToCart = asyncHandler(async (req, res) => {
      exports.updateFromCart = asyncHandler(async (req, res) => {
        try {
          const { uid, product_id, product_name, product_quantity, product_total_amount } = req.body;
-         
          if (!uid || !product_id || !product_name || !product_quantity || !product_total_amount ) { 
            return res.status(400).json({message: "Please provide all required fields "});
           }
@@ -85,7 +87,7 @@ exports.addToCart = asyncHandler(async (req, res) => {
           if (!cartItem) {
             return res.status(400).json({message: "Cart item not found"});
           }
-          console.log(cartItem)
+          console.log(!cartItem) 
           
           const affectedRows = await addtocartModel.updateCartItem(
             uid,

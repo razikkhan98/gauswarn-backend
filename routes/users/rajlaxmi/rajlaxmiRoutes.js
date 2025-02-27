@@ -33,7 +33,7 @@ router.post("/user/addtocart", addtocartController.addToCart);
 // router.delete("/removecart", addtocartController.removeFromCart);
 
 // //  Update cart item
-// router.put("/updateCart", addtocartController.updateFromCart);
+router.put("/updateCart", addtocartController.updateFromCart);
 
 // Contact
 router.post("/contact", contactController.userContact);
