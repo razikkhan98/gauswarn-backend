@@ -47,7 +47,7 @@ exports.registerUser = async (userData) => {
   try {
     const connection = await connectToDatabase();
     const query = `
-  INSERT INTO rajlaxmi_user (
+INSERT INTO rajlaxmi_user (
       uid,    
       user_first_name, 
       user_last_name,

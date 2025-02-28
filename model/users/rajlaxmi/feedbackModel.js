@@ -53,10 +53,8 @@ const { connectToDatabase } = require("../../../config/dbConnection");
 exports.addReview = async (uid, user_name, user_email, rating, feedback) => {
   try {
     const connection = await connectToDatabase();
-      const query = `
-        INSERT INTO rajlaxmi_feedback (uid, user_name, user_email, rating, feedback)
-        VALUES (?, ?, ?, ?, ?)
-      `;
+      const query = `INSERT INTO rajlaxmi_feedback (uid, user_name, user_email, rating, feedback)
+        VALUES (?, ?, ?, ?, ?)`;
 
       const [result] = await connection.execute(query, [
         uid,
@@ -86,16 +84,16 @@ exports.getAllReviews = async () => {
   }
 };
 
-
-// exports.getReviewByIdModal = async (uid) => {
-//     try {
-//       const connection = await connectToDatabase();
-//         const query =
-//           "SELECT * FROM rajlaxmi_feedback WHERE uid = ?";
-//         const [review] = await connection.execute(query, [uid]);
-//         return review.length > 0 ? review[0] : null;
+// Get By Id
+exports.getReviewByIdModal = async (uid) => {
+    try {
+      const connection = await connectToDatabase();
+        const query = `SELECT * FROM rajlaxmi_feedback WHERE uid = ?`;
+        console.log(query);
+        const [review] = await connection.execute(query, [uid]);
+        return review.length > 0 ? review[0] : null;
       
-//     } catch (error) {
-//       throw new Error(error.message);
-//     }
-//   };
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };

@@ -73,7 +73,7 @@ exports.feedback = asyncHandler(async (req, res) => {
   }
 });
 
-// Fetch reviews and calculate statistics
+// Fetch reviews 
 exports.getReviews = asyncHandler(async (req, res) => {
   try {
     const reviews = await reviewModel.getAllReviews();
@@ -123,18 +123,23 @@ exports.getReviews = asyncHandler(async (req, res) => {
 });
 
 
-// //Review get by id
 
-// exports.getReviewById = asyncHandler(async (req, res) => {
-//   try {
-//     const { uid } = req.params;
-//     const review = await reviewModel.getReviewByIdModal(uid);
-//     if (!review) {
-//       return res.status(404).json({ message: "Review not found" });
-//     }
-//     res.status(200).json({ review });
-//   } catch (error) {
-//     console.error("Error fetching review:", error);
-//     res.status(500).json({ error: "Failed to fetch review" });
-//   }
-// });
+// Review get By Id
+exports.getReviewById = asyncHandler(async (req, res) => {
+  try {
+    const { uid } = req.params;
+    if(!uid){
+      return res.status(400).json({message: "uid is required"})
+    }
+    console.log(!uid)
+    const review = await reviewModel.getReviewByIdModal(uid);
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+    // console.log(!review)
+    res.status(200).json({ review });
+  } catch (error) {
+    console.error("Error fetching review:", error);
+    res.status(500).json({ error: "Failed to fetch review" });
+  }
+});

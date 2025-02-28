@@ -15,8 +15,7 @@ exports.addProduct = async (req, res) => {
       product_image
 
     } = req.body;
-    console.log(req.body);
-
+    
     // Validation
     if (
       !uid &&
@@ -30,9 +29,9 @@ exports.addProduct = async (req, res) => {
     ) {
       return res.status(400).json({ message: "All fields are required" });
     }
-
-// new user add product
-  const productUser = await productModel.addProduct(
+    
+    // new user add product
+    const productUser = {
       uid,
       product_name,
       product_description,
@@ -41,7 +40,10 @@ exports.addProduct = async (req, res) => {
       product_stock,
       product_category,
       product_image
-    );
+    };
+    console.log(productUser);
+    
+    await productModel.addProduct(productUser);
     res.status(201).json({
       success: true,
       message: "Product created successfully!",

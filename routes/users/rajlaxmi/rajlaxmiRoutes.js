@@ -10,7 +10,6 @@ const contactController  = require("../../../controllers/users/rajlaxmi/contactC
 const feedbackController = require("../../../controllers/users/rajlaxmi/feedbackController");
 const paymentController = require("../../../controllers/users/rajlaxmi/paymentController");
 const prodcutController = require("../../../controllers/users/rajlaxmi/productController");
-const reviewController = require("../../../controllers/users/rajlaxmi/reviewController");
 
 //  // Routes
 
@@ -38,12 +37,6 @@ router.put("/updateCart", addtocartController.updateFromCart);
 // Get cart
 router.get("/getAllCart", addtocartController.getAllCarts);
 
-// Review
-// router.post("/review", reviewController.userReview);
-
-// router.get("/getAllReview", reviewController.getReviews);
-
-
 // Contact
 router.post("/contact", contactController.userContact);
 
@@ -54,7 +47,7 @@ router.post("/feedback", feedbackController.feedback);
 router.get("/getAllFeedback", feedbackController.getReviews)
 
 // Feedback by id
-// router.get("/getReviewbyId", feedbackController.getReviewById);
+router.get("/getReviewbyId", feedbackController.getReviewById);
 
 // Payment 
 router.post("/payment", paymentController.userPayment);

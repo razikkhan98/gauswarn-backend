@@ -60,7 +60,7 @@ const createPaymentAndGenerateUrl = async (req, res) => {
   const amountInPaise = user_total_amount * 100;
 
   // Insert user details into the database
-  const userQuery = `INSERT INTO organic_farmer_table_payment (user_name, user_mobile_num, user_email, user_state, user_city, user_country, user_house_number, user_landmark, user_pincode, user_total_amount, purchase_price, product_quantity, date, time)
+  const userQuery = `INSERT INTO gauswarn_payment (user_name, user_mobile_num, user_email, user_state, user_city, user_country, user_house_number, user_landmark, user_pincode, user_total_amount, purchase_price, product_quantity, date, time)
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   try {
@@ -218,7 +218,7 @@ const getPhonePeUrlStatusAndUpdatePayment = async (req, res) => {
     const paymentDetails = response.data;
 
     // Update payment status in the database
-    const query = `UPDATE organic_farmer_table_payment SET status = ?, paymentDetails = ?, isPaymentPaid = ? WHERE user_id = ?`;
+    const query = `UPDATE gauswarn_payment SET status = ?, paymentDetails = ?, isPaymentPaid = ? WHERE user_id = ?`;
     const isPaymentPaid = paymentStatus === "true";
 
     const [result] = await withConnection(async (connection) => {

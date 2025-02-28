@@ -2,8 +2,6 @@
 
 const jwt = require("jsonwebtoken");
 const paymentModel = require("../../../model/users/rajlaxmi/paymentModel");
-// const addtocartModel = require("../../../model/users/rajlaxmi/addtocartModel");
-
 
 exports.userPayment = async (req, res) => {
     const {
@@ -18,12 +16,11 @@ exports.userPayment = async (req, res) => {
         user_house_number,
         user_total_amount,
         purchase_price,
-        product_quantity,
-        // addtocart
+        product_quantity
     } = req.body;
-
     console.log(req.body);
-
+    
+    try {
     // Validation
     if (
         !uid ||
@@ -38,18 +35,11 @@ exports.userPayment = async (req, res) => {
         !user_total_amount ||
         !purchase_price ||
         !product_quantity 
-        // !addtocart  
     ){
         return res.status(400).json({ success: false, message: "All fields are required." });
     }
 
      const amountInPaise = user_total_amount * 100; 
-
-    try {
-        //   const cartItems = await addtocartModel.findCartItem(uid);
-        // if (!cartItems || cartItems.length === 0) {
-        //     return res.status(400).json({ success: false, message: "No items in cart" });
-        // }
 
         // Create JWT token for the payment 
         const token = jwt.sign(
@@ -75,13 +65,11 @@ exports.userPayment = async (req, res) => {
             user_house_number,
             user_total_amount,
             purchase_price,
-            product_quantity,
-            // addtocart
+            product_quantity
         };
 
         // Save payment 
         await paymentModel.userPayment(paymentDetails);
-
         return res.json({
             success: true,
             message: "Payment done successfully",
@@ -93,8 +81,7 @@ exports.userPayment = async (req, res) => {
                 user_landmark,
                 user_house_number,
                 total_amount: user_total_amount
-            },
-            // cart_items:cartItems
+            }
         });
     } catch (error) {
         console.error("Error during payment process:", error);

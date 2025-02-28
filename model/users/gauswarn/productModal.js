@@ -18,7 +18,7 @@ exports.addProduct = async (
 
     return await withConnection(async (connection) => {
       const query = `
-    INSERT INTO organic_farmer_table_product 
+    INSERT INTO gauswarn_product 
     (product_name, product_description, product_price, product_quantity, product_stock, product_category, product_website_name , product_image) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 `;
@@ -44,7 +44,7 @@ exports.addProduct = async (
 exports.getAllProducts = async () => {
   try {
     return await withConnection(async (connection) => {
-      const query = "SELECT * FROM organic_farmer_table_product";
+      const query = "SELECT * FROM gauswarn_product";
       const [products] = await connection.execute(query);
       return products;
     });
@@ -58,7 +58,7 @@ exports.getProductById = async (id) => {
   try {
     return await withConnection(async (connection) => {
       const query =
-        "SELECT * FROM organic_farmer_table_product WHERE product_id = ?";
+        "SELECT * FROM gauswarn_product WHERE product_id = ?";
       const [product] = await connection.execute(query, [id]);
       return product.length > 0 ? product[0] : null;
     });
@@ -85,7 +85,7 @@ exports.updateProduct = async (
 
     return await withConnection(async (connection) => {
       const query = `
-      UPDATE organic_farmer_table_product
+      UPDATE gauswarn_product
       SET product_name = ?, product_description = ?, product_price = ?,product_quantity = ?, product_stock = ?, product_category = ?, product_image = ?, product_website_name = ?
       WHERE product_id = ?
     `;
@@ -112,7 +112,7 @@ exports.deleteProduct = async (id) => {
   try {
     return await withConnection(async (connection) => {
       const query =
-        "DELETE FROM organic_farmer_table_product WHERE product_id = ?";
+        "DELETE FROM gauswarn_product WHERE product_id = ?";
       const [result] = await connection.execute(query, [id]);
       return result.affectedRows > 0;
     });
