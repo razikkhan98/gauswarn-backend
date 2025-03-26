@@ -10,7 +10,7 @@ exports.findCartItem = async (product_id, user_id) => {
     // Ensure to await the query to resolve the promise
     return await withConnection(async (connection) => {
       const query =
-        "SELECT * FROM organic_farmer_table_addtocart WHERE product_id = ? AND user_id = ?";
+        "SELECT * FROM gauswarn_addtocart WHERE product_id = ? AND user_id = ?";
       const [rows] = await connection.execute(query, [product_id, user_id]);
 
       // Log the results for debugging purposes
@@ -28,7 +28,7 @@ exports.findCartItem = async (product_id, user_id) => {
       );
       return await withConnection(async (connection) => {
         const query =
-          "SELECT * FROM organic_farmer_table_addtocart WHERE product_id = ? AND user_id = ?";
+          "SELECT * FROM gauswarn_addtocart WHERE product_id = ? AND user_id = ?";
         const [rows] = await connection.execute(query, [product_id, user_id]);
 
         // Log the results for debugging purposes
@@ -64,7 +64,7 @@ exports.addCartItem = async (cartItem) => {
 
     return await withConnection(async (connection) => {
       const query =
-        "INSERT INTO organic_farmer_table_addtocart (user_id, product_id, product_name, product_price, product_weight, product_quantity, product_total_amount, purchase_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        "INSERT INTO gauswarn_addtocart (user_id, product_id, product_price, product_weight, product_quantity, product_total_amount, purchase_price) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
       const [results] = await connection.execute(query, [
         user_id || "",
@@ -100,7 +100,7 @@ exports.updateCartItem = async (
   try {
     return await withConnection(async (connection) => {
       const query =
-        "UPDATE organic_farmer_table_addtocart SET product_quantity = ?, product_total_amount = ? WHERE product_id = ? AND user_id = ?";
+        "UPDATE gauswarn_addtocart SET product_quantity = ?, product_total_amount = ? WHERE product_id = ? AND user_id = ?";
 
       const [results] = await connection.execute(query, [
         newQuantity,
@@ -129,7 +129,7 @@ exports.removeFromCartModal = async (user_id, product_id) => {
 
     return await withConnection(async (connection) => {
       const query =
-        "DELETE FROM organic_farmer_table_addtocart WHERE product_id = ? AND user_id = ?";
+        "DELETE FROM gauswarn_addtocart WHERE product_id = ? AND user_id = ?";
 
       // Executing the delete query
       const [result] = await connection.execute(query, [product_id, user_id]);
