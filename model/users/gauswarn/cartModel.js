@@ -54,6 +54,7 @@ exports.addCartItem = async (cartItem) => {
     const {
       user_id,
       product_id,
+      product_name,
       product_price,
       product_weight,
       product_quantity,
@@ -63,11 +64,12 @@ exports.addCartItem = async (cartItem) => {
 
     return await withConnection(async (connection) => {
       const query =
-        "INSERT INTO organic_farmer_table_addtocart (user_id, product_id, product_price, product_weight, product_quantity, product_total_amount, purchase_price) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        "INSERT INTO organic_farmer_table_addtocart (user_id, product_id, product_name, product_price, product_weight, product_quantity, product_total_amount, purchase_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
       const [results] = await connection.execute(query, [
         user_id || "",
         product_id || "",
+        product_name || "",
         product_price || "",
         product_weight || "",
         product_quantity || "",
