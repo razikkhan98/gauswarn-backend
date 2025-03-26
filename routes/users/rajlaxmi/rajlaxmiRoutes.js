@@ -26,13 +26,13 @@ router.post("/login", loginController.userLogin);
 // router.post("/resetPassword", forgotPasswordController.passwordReset);
 
 // Add To Cart
-router.post("/user/addtocart", addtocartController.addToCart);
+router.post("/addtocart", addtocartController.addToCart);
 
 // // User Add to cart remove
 // router.delete("/removecart", addtocartController.removeFromCart);
 
 // //  Update cart item
-router.put("/updateCart", addtocartController.updateFromCart);
+router.put("/updateCart/:id", addtocartController.updateFromCart);
 
 // Get cart
 router.get("/getAllCart", addtocartController.getAllCarts);

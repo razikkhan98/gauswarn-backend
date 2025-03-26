@@ -1,82 +1,70 @@
-const { connectToDatabase } = require("../../../config/dbConnection"); 
+const { withConnection } = require("../../../utils/helper");
 
-// Find a user by email
-exports.findUserByEmail = async (user_email) => {
+exports.findUserByEmail = async (email) => {
   try {
-    const connection = await connectToDatabase();
-    const query = 'SELECT * FROM rajlaxmi_user WHERE user_email = ?'; 
-    const [rows] = await connection.query(query, [user_email]);
-    return rows[0] || null; 
-
-  } catch (error) {
-    console.log("error: ", error);
-    return error;
-  };
-};
-
-// Find a user by phone number
-exports.findUserByPhone = async (user_number) => {
-  try {
-    const connection = await connectToDatabase();
-    const query = 'SELECT * FROM rajlaxmi_user WHERE user_number = ?'; 
-    const [rows] = await connection.query(query, [user_number]);
-    return rows[0] || null; 
-
+    return await withConnection(async (connection) => {
+      const query = `SELECT * FROM rajlaxmi_user WHERE email = ?`;
+      const [rows] = await connection.execute(query, [email]);
+      return rows[0] || null;
+    });
   } catch (error) {
     console.log("error: ", error);
     return error;
   }
 };
 
+// Find a user by phone number
+exports.findUserByPhone = async (mobileNumber) => {
+  try {
+    // const connection = await connectToDatabase();
+    return await withConnection(async (connection) => {
+      const query = `SELECT * FROM rajlaxmi_user WHERE mobileNumber = ?`;
+      console.log("Executing query:", query, "with value:", mobileNumber);
+      const [rows] = await connection.execute(query, [mobileNumber]);
+
+      if (!rows.length) {
+        console.log("No user found with this mobile number.");
+        return null;
+      }
+      console.log("User found:", rows[0]); // Debugging output
+      return rows[0];
+    });
+  } catch (error) {
+    console.error("Database error in findUserByPhone:", error);
+    throw new Error("Database query failed");
+  }
+};
+
 // Register a new user
 exports.registerUser = async (userData) => {
-  const {
-    uid,
-    user_first_name,
-    user_last_name,
-    user_email,
-    user_password,
-    user_number,
-    user_country,
-    user_state,
-    user_city,
-    user_address
-  } = userData;
+  const { uid, firstName, lastName, email, password, mobileNumber } = userData;
 
-  // SQL query to insert all user fields into the 'Rajlaxmi'
   try {
-    const connection = await connectToDatabase();
-    const query = `
-INSERT INTO rajlaxmi_user (
-      uid,    
-      user_first_name, 
-      user_last_name,
-      user_email, 
-      user_password,
-      user_number, 
-      user_country, 
-      user_state, 
-      user_city, 
-      user_address 
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    return await withConnection(async (connection) => {
+      const query = `
+        INSERT INTO rajlaxmi_user (
+          uid,    
+          firstName, 
+          lastName,
+          email, 
+          password,
+          mobileNumber  
+        ) VALUES (?, ?, ?, ?, ?, ?)`;
 
-    // Execute the query with the user data
-    const [results] = await connection.execute(query, [
-      uid,
-      user_first_name,
-      user_last_name,
-      user_email,
-      user_password,
-      user_number,
-      user_country,
-      user_state,
-      user_city,
-      user_address
-    ])
-    return results;
+      // Execute the query with the user data
+      const [results] = await connection.execute(query, [
+        uid,
+        firstName,
+        lastName,
+        email,
+        password,
+        mobileNumber,
+      ]);
 
+      return results;
+    });
   } catch (error) {
-    console.log("error: ", error);
-    return error;
+    console.error("Database error in registerUser:", error);
+    throw new Error("Database query failed");
   }
 };

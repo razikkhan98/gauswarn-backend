@@ -5,72 +5,68 @@ const registerModel = require("../../../model/users/rajlaxmi/registerModel");
 
 // register
 exports.userRegister = asyncHandler(async (req, res, next) => {
-    const {
-        user_first_name,
-        user_last_name,
-        user_email,
-        user_password,
-        user_number,
-        user_country,
-        user_state,
-        user_city,
-        user_address,
-    } = req.body;
+  const { firstName, lastName, email, password, mobileNumber } = req.body;
+  
+  // Validate request data
+  
+  if (!firstName || !lastName || !email || !password || !mobileNumber) {
+    return res.status(400).json({ message: "Please required all fields" });
+  }
+  try {
+   
+    // Check if user already exists (by email)
+    const userExistsByEmail = await registerModel.findUserByEmail(email);
     
-    try {
-        // Validate request data
-        if (
-            !user_first_name ||
-            !user_last_name ||
-            !user_email ||
-            !user_password ||
-            !user_number
-        ) {
-            return res
-                .status(400)
-                .json({ message: "Please required all fields" });
-        }
-
-        // Check if user already exists (by email)
-        const userExistsByEmail = await registerModel.findUserByEmail(user_email);
-        if (userExistsByEmail) {
-            return res.status(400).json({ message: "Email already exists" });
-        }
-        console.log(userExistsByEmail);
-
-        // Check if user already exists (by phone number)
-        const userExistsByPhone = await registerModel.findUserByPhone(user_number);
-        if (userExistsByPhone) {
-            return res.status(400).json({ message: "Phone number already exists" });
-        }
-
-        // Generate code based on , firstName(2) , mobile last 4 digit of mobile number
-        let numberString = String(user_number);
-        const code = user_first_name.slice(0, 2) + numberString.slice(-4);
-        
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(user_password, 10);
-
-        // Create the new user object
-        const newUser = {
-            user_first_name,
-            user_last_name,
-            user_email,
-            user_password: hashedPassword,
-            user_number,
-            user_country,
-            user_state,
-            user_city,
-            user_address,
-            uid: code,
-        };
-        console.log(newUser);
-
-        // Save the new user to the database
-        await registerModel.registerUser(newUser);
-        res.status(201).json({ success: true, message: "User registered successfully" });
-    } catch (error) {
-        console.error("Database error:", error); 
-        res.status(500).json({ message: "Database error", error: error.message });
+    if (userExistsByEmail) {
+      
+      return res.json({ message: "Email already exists" });
     }
+    
+   
+
+    // Check if user already exists (by phone number)
+    const userExistsByPhone = await registerModel.findUserByPhone(mobileNumber);
+  
+    if (userExistsByPhone) {
+      return res.json({ message: "Phone number already exists" });
+    }
+
+
+    // // Generate code based on , firstName(2) , mobile last 4 digit of mobile number
+    // let numberString = String(mobileNumber);
+    // const code = firstName.slice(0, 4) + numberString.slice(-5);
+
+       // Generate a unique user code (firstName(2-4 letters) + last 4-5 digits of mobile number)
+       let numberString = String(mobileNumber);
+       const code =
+         firstName.slice(0, Math.min(4, firstName.length)) +
+         numberString.slice(-Math.min(5, numberString.length));
+
+    // // Hash the password
+    // const hashedPassword = await bcrypt.hash(password, 10);
+
+
+        // Hash the password
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Create the new user object
+    const newUser = {
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      mobileNumber,
+      uid: code,
+    };
+
+    // Save the new user to the database
+    await registerModel.registerUser(newUser);
+    res
+      .status(201)
+      .json({ success: true, message: "User registered successfully" });
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ message: "Database error", error: error.message });
+  }
 });
