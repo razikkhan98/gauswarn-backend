@@ -10,6 +10,7 @@ const contactController  = require("../../../controllers/users/rajlaxmi/contactC
 const feedbackController = require("../../../controllers/users/rajlaxmi/feedbackController");
 const paymentController = require("../../../controllers/users/rajlaxmi/paymentController");
 const prodcutController = require("../../../controllers/users/rajlaxmi/productController");
+const wishlistController = require("../../../controllers/users/rajlaxmi/wishlistController");
 
 //  // Routes
 
@@ -58,9 +59,12 @@ router.post("/product", prodcutController.addProduct);
 // Get All Product 
 router.get("/getAllProduct", prodcutController.getAllProducts)
 
+// Add wishlist 
+router.post("/wishlist", wishlistController.addWishlist);
 
+router.get("/getAllWishlist", wishlistController.getAllWishlist);
 
-
+router.delete("/removeFromWishlist", wishlistController.removeFromWishlist);
 
 
 module.exports = router;
