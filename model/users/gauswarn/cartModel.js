@@ -54,6 +54,7 @@ exports.addCartItem = async (cartItem) => {
     const {
       user_id,
       product_id,
+      product_name,
       product_price,
       product_weight,
       product_quantity,
@@ -68,6 +69,7 @@ exports.addCartItem = async (cartItem) => {
       const [results] = await connection.execute(query, [
         user_id || "",
         product_id || "",
+        product_name || "",
         product_price || "",
         product_weight || "",
         product_quantity || "",

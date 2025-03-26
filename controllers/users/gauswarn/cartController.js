@@ -7,6 +7,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
   const {
     product_id,
     user_id,
+    product_name,
     product_price,
     product_weight,
     product_quantity,
@@ -18,6 +19,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
   if (
     !product_id ||
     !user_id ||
+    !product_name ||
     !product_price ||
     !product_weight ||
     !product_quantity ||
@@ -60,6 +62,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
       await cartModel.addCartItem({
         user_id,
         product_id,
+        product_name,
         product_price,
         product_weight,
         product_quantity,

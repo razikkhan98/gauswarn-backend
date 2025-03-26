@@ -8,10 +8,10 @@ const {
   generateChecksumForPhonePe,
   generateMergedKey,
 } = require("../../../utils/payment.service");
+const moment = require("moment");
 
 const jwt = require("jsonwebtoken");
 
-const moment = require("moment");
 const { withConnection } = require("../../../utils/helper");
 
 
@@ -164,6 +164,7 @@ const createPaymentAndGenerateUrl = async (req, res) => {
       url: redirectUrl,
       token, // Include JWT in response
       mergedKey, // Include the generated key
+      date: moment().format("MMMM Do YYYY, h:mm:ss a"),
     });
   } catch (error) {
     console.log("error: ", error);
