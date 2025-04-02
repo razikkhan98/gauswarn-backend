@@ -5,7 +5,6 @@ const reviewModel = require("../../../model/users/gauswarn/feedbackModel");
 exports.feedback = asyncHandler(async (req, res) => {
   try {
     const { name, email, rating, feedback } = req.body;
-    console.log(name, email, rating);
     if (!name || !email || !rating) {
       return res
         .status(400)

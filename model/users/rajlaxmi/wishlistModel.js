@@ -1,65 +1,93 @@
 const { withConnection } = require("../../../utils/helper");
 
-exports.addWishlist = async (wishlist) => {
-    try {
-        const {
-            uid,
-            product_name,
-            product_price,
-            product_quantity
-        } = wishlist;
+exports.addWishlist = async ({
+  uid,
+  product_id,
+  product_name,
+  product_price,
+  product_quantity,
+  product_image, // Added product_image
+}) => {
+  try {
+    return await withConnection(async (connection) => {
+      const query = `INSERT INTO rajlaxmi_wishlist (uid, product_id, product_name, product_price, product_quantity, product_image) VALUES (?, ?, ?, ?, ?, ?)`; // Updated query
 
-        return await withConnection(async (connection) => {
-            // SQL query
-            const query = `INSERT INTO rajlaxmi_wishlist ( uid, product_name, product_price, product_quantity
-                   ) VALUES (?, ?, ?, ?)`;
+      // Executing the insert query
+      const [result] = await connection.execute(query, [
+        uid,
+        product_id,
+        product_name,
+        product_price,
+        product_quantity,
+        product_image, // Added product_image
+      ]);
 
-            // Execute the query with the user data
-            const [results] = await connection.execute(query, [
-                uid,
-                product_name,
-                product_price,
-                product_quantity
-            ]);
-
-            return results;
-        });
-    } catch (error) {
-        console.error("Database error:", error);
-        throw new Error("Error adding wishlist to the database.");
-    }
+      return {
+        message: "Wishlist item added successfully",
+        insertId: result.insertId,
+      };
+    });
+  } catch (error) {
+    console.error("Error adding to wishlist:", error);
+    throw error; // Ensure the error propagates to the controller
+  }
 };
+
 
 // Get All Wishlist
 exports.getAllWishlist = async () => {
-    try {
-        return await withConnection(async (connection) => {
-            const query = `SELECT * FROM rajlaxmi_wishlist`;
-            const [products] = await connection.execute(query);
-            return products;
-        });
-    } catch (error) {
-        throw new Error(error.message);
-    }
+  try {
+    return await withConnection(async (connection) => {
+      const query = `SELECT * FROM rajlaxmi_wishlist`;
+      const [products] = await connection.execute(query);
+      return products;
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 // Remove wishlist
-exports.removeFromWishlist = async (uid) => {
-    try {
-        return await withConnection(async (connection) => {
-            const query = `DELETE FROM rajlaxmi_wishlist WHERE uid = ?`;
+// exports.removeFromWishlist = async (uid) => {
+//     try {
+//         return await withConnection(async (connection) => {
+//             const query = `DELETE FROM rajlaxmi_wishlist WHERE uid = ?`;
 
-            // Executing the delete query
-            const [result] = await connection.execute(query, [uid]);
+//             // Executing the delete query
+//             const [result] = await connection.execute(query, [uid]);
 
-            // Check if any rows were affected (deleted)
-            if (result.affectedRows === 0) {
-                return null;  // No wishlist item was removed
-            }
+//             // Check if any rows were affected (deleted)
+//             if (result.affectedRows === 0) {
+//                 return null;  // No wishlist item was removed
+//             }
 
-            return { message: "Wishlist item removed successfully", affectedRows: result.affectedRows };      
-        });
-    } catch (error) {
-        console.error("Error removing wishlist", error);
-    }
+//             return { message: "Wishlist item removed successfully", affectedRows: result.affectedRows };
+//         });
+//     } catch (error) {
+//         console.error("Error removing wishlist", error);
+//     }
+// };
+
+exports.removeFromWishlist = async (uid, product_id) => {
+  try {
+    return await withConnection(async (connection) => {
+      const query = `DELETE FROM rajlaxmi_wishlist WHERE uid = ? AND product_id = ?`;
+
+      // Executing the delete query
+      const [result] = await connection.execute(query, [uid, product_id]);
+
+      // Check if any rows were affected (deleted)
+      if (result.affectedRows === 0) {
+        return null; // No wishlist item was removed
+      }
+
+      return {
+        message: "Wishlist item removed successfully",
+        affectedRows: result.affectedRows,
+      };
+    });
+  } catch (error) {
+    console.error("Error removing wishlist:", error);
+    throw error; // Ensure the error propagates to the calling function
+  }
 };

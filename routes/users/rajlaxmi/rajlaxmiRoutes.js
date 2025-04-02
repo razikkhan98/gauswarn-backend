@@ -12,7 +12,7 @@ const paymentController = require("../../../controllers/users/rajlaxmi/paymentCo
 const prodcutController = require("../../../controllers/users/rajlaxmi/productController");
 const wishlistController = require("../../../controllers/users/rajlaxmi/wishlistController");
 
-//  // Routes
+// Routes
 
 // Register
 router.post("/register", registerController.userRegister);
@@ -30,10 +30,10 @@ router.post("/login", loginController.userLogin);
 router.post("/addtocart", addtocartController.addToCart);
 
 // // User Add to cart remove
-// router.delete("/removecart", addtocartController.removeFromCart);
+// router.delete("/removecart", addtocartController.deleteCartItem);
 
 // //  Update cart item
-router.put("/updateCart/:id", addtocartController.updateFromCart);
+// router.put("/updateCart", addtocartController.updateCartItem);
 
 // Get cart
 router.get("/getAllCart", addtocartController.getAllCarts);
@@ -48,10 +48,14 @@ router.post("/feedback", feedbackController.feedback);
 router.get("/getAllFeedback", feedbackController.getReviews)
 
 // Feedback by id
-router.get("/getReviewbyId", feedbackController.getReviewById);
+router.get("/reviews/:uid/:product_id", feedbackController.getReviewById);
 
-// Payment 
-router.post("/payment", paymentController.userPayment);
+// Payment
+// phonePe routes
+router.post("/create-order", paymentController.createPaymentAndGenerateUrl);
+router.post("/status", paymentController.getPhonePeUrlStatusAndUpdatePayment);
+
+
 
 // Product 
 router.post("/product", prodcutController.addProduct);

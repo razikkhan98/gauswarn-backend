@@ -30,7 +30,6 @@
 // }
 // });
 
-
 // // Get All Feedback
 // exports.getAllFeedback = async (req, res) => {
 //   try {
@@ -42,26 +41,31 @@
 //   }
 // };
 
-
-
-
-
-
-
 const asyncHandler = require("express-async-handler");
 const reviewModel = require("../../../model/users/rajlaxmi/feedbackModel");
 
 // Add a new review
 exports.feedback = asyncHandler(async (req, res) => {
   try {
-    const {uid, user_name, user_email, rating, feedback } = req.body;
-    console.log(req.body);
+    const { uid, product_id, user_name, user_email, rating, feedback } =
+      req.body;
+  
 
-    if (!uid ||!user_name || !user_email || !rating) {
-      return res.status(400).json({ message: "Name, email, and rating are required" });
+    if (!uid || !user_name || !user_email || !rating || !product_id) {
+      return res
+        .status(400)
+        .json({ message: "Name, email, and rating are required" });
     }
 
-    const reviewId = await reviewModel.addReview(uid, user_name, user_email, rating, feedback);
+
+    const reviewId = await reviewModel.addReview(
+      uid,
+      product_id,
+      user_name,
+      user_email,
+      rating,
+      feedback
+    );
     res.status(201).json({
       success: true,
       message: "Review submitted successfully!",
@@ -73,10 +77,19 @@ exports.feedback = asyncHandler(async (req, res) => {
   }
 });
 
-// Fetch reviews 
+// Fetch reviews
+
 exports.getReviews = asyncHandler(async (req, res) => {
   try {
-    const reviews = await reviewModel.getAllReviews();
+    const { uid, product_id } = req.query;
+
+    if (!uid || !product_id) {
+      return res
+        .status(400)
+        .json({ message: "uid and product_id are required." });
+    }
+
+    const reviews = await reviewModel.getReviewsByProduct(uid, product_id);
 
     if (!reviews?.length) {
       return res.status(200).json({
@@ -92,7 +105,8 @@ exports.getReviews = asyncHandler(async (req, res) => {
         reviews: [],
       });
     }
-    const totalReviews = reviews?.length;
+
+    const totalReviews = reviews.length;
 
     const ratingsBreakdown = [1, 2, 3, 4, 5].reduce((acc, rating) => {
       acc[rating] = reviews.filter((review) => review.rating === rating).length;
@@ -118,25 +132,26 @@ exports.getReviews = asyncHandler(async (req, res) => {
   } catch (error) {
     console.error("Error fetching reviews:", error);
     res.status(500).json({ error: "Failed to fetch reviews" });
-  } finally {
   }
 });
-
-
 
 // Review get By Id
 exports.getReviewById = asyncHandler(async (req, res) => {
   try {
-    const { uid } = req.params;
-    if(!uid){
-      return res.status(400).json({message: "uid is required"})
+    const { uid, product_id } = req.params;
+
+    if (!uid || !product_id) {
+      return res
+        .status(400)
+        .json({ message: "uid and product_id are required" });
     }
-    console.log(!uid)
-    const review = await reviewModel.getReviewByIdModal(uid);
+
+    const review = await reviewModel.getReviewByIdModal(uid, product_id);
+
     if (!review) {
       return res.status(404).json({ message: "Review not found" });
     }
-    // console.log(!review)
+
     res.status(200).json({ review });
   } catch (error) {
     console.error("Error fetching review:", error);

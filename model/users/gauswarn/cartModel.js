@@ -14,7 +14,6 @@ exports.findCartItem = async (product_id, user_id) => {
       const [rows] = await connection.execute(query, [product_id, user_id]);
 
       // Log the results for debugging purposes
-   
 
       // Return the results (assuming you want the first row)
       return rows;
@@ -32,7 +31,7 @@ exports.findCartItem = async (product_id, user_id) => {
         const [rows] = await connection.execute(query, [product_id, user_id]);
 
         // Log the results for debugging purposes
-       
+
         // Return the results (assuming you want the first row)
         return rows;
       });
@@ -43,7 +42,6 @@ exports.findCartItem = async (product_id, user_id) => {
         moment().format("MMMM Do YYYY, h:mm:ss a")
       );
     }
-
   }
 };
 
@@ -64,7 +62,7 @@ exports.addCartItem = async (cartItem) => {
 
     return await withConnection(async (connection) => {
       const query =
-        "INSERT INTO gauswarn_addtocart (user_id, product_id, product_price, product_weight, product_quantity, product_total_amount, purchase_price) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        "INSERT INTO gauswarn_addtocart (user_id, product_id,product_name, product_price, product_weight, product_quantity, product_total_amount, purchase_price) VALUES (?, ?, ?, ?, ?, ?, ?,?)";
 
       const [results] = await connection.execute(query, [
         user_id || "",
@@ -94,8 +92,8 @@ exports.addCartItem = async (cartItem) => {
 exports.updateCartItem = async (
   user_id,
   product_id,
-  newQuantity,
-  newTotalAmount
+  product_quantity,
+  product_total_amount
 ) => {
   try {
     return await withConnection(async (connection) => {
@@ -103,8 +101,8 @@ exports.updateCartItem = async (
         "UPDATE gauswarn_addtocart SET product_quantity = ?, product_total_amount = ? WHERE product_id = ? AND user_id = ?";
 
       const [results] = await connection.execute(query, [
-        newQuantity,
-        newTotalAmount,
+        product_quantity,
+        product_total_amount,
         product_id,
         user_id,
       ]);
