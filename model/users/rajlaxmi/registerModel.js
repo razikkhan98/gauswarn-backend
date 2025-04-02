@@ -1,5 +1,24 @@
 const { withConnection } = require("../../../utils/helper");
 
+
+
+// Check if the user exists in uid
+
+exports.findUserByUid = async (uid) => {
+  try {
+    // const connection = await connectToDatabase();
+    return await withConnection(async (connection) => {
+      const query = `SELECT * FROM rajlaxmi_user WHERE uid = ?`;
+      const [rows] = await connection.execute(query, [uid]);
+      return rows[0] || null;
+    });
+  } catch (error) {
+    console.log("error: ", error);
+    return error;
+  }
+};
+ 
+
 exports.findUserByEmail = async (email) => {
   try {
     return await withConnection(async (connection) => {
@@ -19,14 +38,12 @@ exports.findUserByPhone = async (mobileNumber) => {
     // const connection = await connectToDatabase();
     return await withConnection(async (connection) => {
       const query = `SELECT * FROM rajlaxmi_user WHERE mobileNumber = ?`;
-      console.log("Executing query:", query, "with value:", mobileNumber);
       const [rows] = await connection.execute(query, [mobileNumber]);
 
       if (!rows.length) {
         console.log("No user found with this mobile number.");
         return null;
       }
-      console.log("User found:", rows[0]); // Debugging output
       return rows[0];
     });
   } catch (error) {

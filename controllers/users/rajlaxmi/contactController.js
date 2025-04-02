@@ -8,12 +8,12 @@ exports.userContact = asyncHandler(async (req, res) => {
       user_name,
       user_email,
       user_number,
-      title,
+     
       message
     } = req.body;
 
     // Validation
-    if (!uid && !user_name && !user_email && !user_number && !title && !message) {
+    if (!uid && !user_name && !user_email && !user_number && !message) {
       return res.status(400).json({ message: "Please provide all fileds are required" });
     }
 
@@ -23,7 +23,7 @@ exports.userContact = asyncHandler(async (req, res) => {
       user_name,
       user_email,
       user_number,
-      title,
+    
       message
     }
     await contactModel.userContact(newContact)

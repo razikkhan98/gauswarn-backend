@@ -219,7 +219,7 @@ const getPhonePeUrlStatusAndUpdatePayment = async (req, res) => {
     const paymentDetails = response.data;
 
     // Update payment status in the database
-    const query = `UPDATE gauswarn_payment SET status = ?, paymentDetails = ?, isPaymentPaid = ? WHERE user_id = ?`;
+    const query = `UPDATE gauswarn_payment SET status = ?, paymentDetails = ?, isPaymentPaid = ? WHERE users_id = ?`;
     const isPaymentPaid = paymentStatus === "true";
 
     const [result] = await withConnection(async (connection) => {
