@@ -29,6 +29,11 @@ router.post("/reset", forgotPasswordController.passwordReset);
 // add new Product
 router.post("/createProduct", productController.addProduct);
 
+// update single by id
+router.post("/updateProductById", productController.updateProduct);
+// delete
+router.post("/deleteProductById", productController.deleteProduct);
+
 // get all products
 // router.get("/getAllProduct", productController.getAllProducts);
 
@@ -136,7 +141,6 @@ router.delete(
 );
 
 router.get("/me", authMiddleware, registerController.meAPI);
-
 
 router.use(errorHandler);
 

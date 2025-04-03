@@ -48,8 +48,6 @@ exports.addProduct = async (productData) => {
   }
 };
 
-
-
 // Get All Products
 exports.getAllProducts = async () => {
   try {
@@ -57,6 +55,69 @@ exports.getAllProducts = async () => {
     const query = `SELECT * FROM rajlaxmi_product`;
     const [products] = await connection.execute(query);
     return products;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+exports.updateProduct = async (productData) => {
+  try {
+    let {
+      product_id,
+      product_name,
+      product_description,
+      product_price,
+      product_weight,
+      product_stock,
+      product_category,
+      product_image,
+    } = productData;
+
+    const productWeightJSON = JSON.stringify(product_weight);
+
+    return await withConnection(async (connection) => {
+      const query = `
+        UPDATE rajlaxmi_product
+        SET 
+          product_name = ?, 
+          product_description = ?, 
+          product_price = ?, 
+          product_weight = ?, 
+          product_stock = ?, 
+          product_category = ?, 
+          product_image = ?
+        WHERE product_id = ?
+      `;
+
+      const [result] = await connection.execute(query, [
+        product_name,
+        product_description,
+        product_price,
+        productWeightJSON,
+        product_stock,
+        product_category,
+        product_image,
+        product_id,
+      ]);
+
+      if (result.affectedRows === 0) {
+        throw new Error("Product not found or no changes made");
+      }
+
+      return product_id;
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+exports.deleteProduct = async (product_id) => {
+  try {
+    return await withConnection(async (connection) => {
+      const query = "DELETE FROM rajlaxmi_product WHERE product_id = ?";
+      const [result] = await connection.execute(query, [product_id]);
+      return result.affectedRows > 0;
+    });
   } catch (error) {
     throw new Error(error.message);
   }
