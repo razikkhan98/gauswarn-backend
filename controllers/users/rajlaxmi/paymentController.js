@@ -10,7 +10,7 @@ const {
   generateMergedKey,
 } = require("../../../utils/payment.service");
 const { withConnection } = require("../../../utils/helper");
-const { processOrderAfterPayment } = require("../../../utils/processOrderAfterPayment.JS");
+const { processOrderAfterPayment } = require("../../../utils/processOrderAfterPayment");
 
 
 

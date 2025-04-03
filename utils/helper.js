@@ -56,9 +56,15 @@ const calculateProfit = (sellingPrice, purchase_price, product_quantity) => {
   return profitPrice;
 };
 
+const shortenUUID = (uuid) => {
+  const cleanUuid = uuid.replace(/-/g, "");
+  return cleanUuid.substring(0, 5);
+};
+
 module.exports = {
   createEmailTransporter,
   withConnection,
   calculateProfit,
-  connectToDatabase
+  connectToDatabase,
+  shortenUUID,
 };
