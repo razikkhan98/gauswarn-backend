@@ -64,6 +64,16 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
+exports.getAllProductsWithFeedback = async (req, res) => {
+  try {
+    const products = await productModel.getAllProductsWithFeedback();
+    res.status(200).json({ products });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.json({ error: "Failed to fetch products" });
+  }
+};
+
 exports.updateProduct = async (req, res) => {
   try {
     const isUpdated = await productModel.updateProduct(req.body);

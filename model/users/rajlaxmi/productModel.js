@@ -60,6 +60,63 @@ exports.getAllProducts = async () => {
   }
 };
 
+exports.getAllProductsWithFeedback = async () => {
+  try {
+    const connection = await connectToDatabase();
+    const query = `
+      SELECT 
+        p.id,
+        p.product_id,
+        p.product_name,
+        p.product_description,
+        p.product_price,
+        p.product_weight,
+        p.product_stock,
+        p.product_category,
+        p.product_image,
+        GROUP_CONCAT(f.rating SEPARATOR ', ') AS feedback_ratings,
+        GROUP_CONCAT(f.feedback SEPARATOR ', ') AS feedbacks,
+        GROUP_CONCAT(f.user_name SEPARATOR ', ') AS feedback_user_names,
+        GROUP_CONCAT(f.user_email SEPARATOR ', ') AS feedback_user_emails
+      FROM rajlaxmi_product p
+      LEFT JOIN rajlaxmi_feedback f ON p.product_id = f.product_id
+      GROUP BY p.product_id
+    `;
+    const [productsWithFeedback] = await connection.execute(query);
+
+    productsWithFeedback.forEach((product) => {
+      const feedback_ratings = product.feedback_ratings
+        .split(", ")
+        .map((rating) => rating.trim());
+      const feedbacks = product.feedbacks
+        .split(", ")
+        .map((feedback) => feedback.trim());
+      const feedback_user_names = product.feedback_user_names
+        .split(", ")
+        .map((name) => name.trim());
+      const feedback_user_emails = product.feedback_user_emails
+        .split(", ")
+        .map((email) => email.trim());
+
+      const feedbacksArray = feedback_ratings.map((rating, index) => ({
+        feedback_ratings: rating,
+        feedbacks: feedbacks[index] || "",
+        feedback_user_names: feedback_user_names[index] || "",
+        feedback_user_emails: feedback_user_emails[index] || "",
+      }));
+
+      product.feedbacks = feedbacksArray;
+      delete product.feedback_ratings;
+      delete product.feedback_user_names;
+      delete product.feedback_user_emails;
+    });
+
+    return productsWithFeedback;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 exports.updateProduct = async (productData) => {
   try {
     let {

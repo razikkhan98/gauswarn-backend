@@ -34,6 +34,12 @@ router.post("/updateProductById", productController.updateProduct);
 // delete
 router.post("/deleteProductById", productController.deleteProduct);
 
+// getAllProductsWithFeedback
+router.get(
+  "/getAllProductsWithFeedback",
+  productController.getAllProductsWithFeedback
+);
+
 // get all products
 // router.get("/getAllProduct", productController.getAllProducts);
 
