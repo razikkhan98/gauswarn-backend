@@ -36,28 +36,17 @@ exports.addReview = async (uid, product_id, user_name, user_email, rating, feedb
 //   }
 // };
 
-exports.getReviewsByProduct = async (uid, product_id) => {
+exports.getReviewsByProduct = async (product_id) => {
+  let connection;
   try {
-    const connection = await connectToDatabase();
-    const query = "SELECT * FROM rajlaxmi_feedback WHERE uid = ? AND product_id = ?";
-    const [rows] = await connection.execute(query, [uid, product_id]);
+    connection = await connectToDatabase();
+    const query = "SELECT * FROM rajlaxmi_feedback WHERE product_id = ?";
+    const [rows] = await connection.execute(query, [product_id]);
     return rows;
   } catch (error) {
     console.error("Error fetching reviews:", error);
     throw error;
-  }
-};
-
-// Get By Id
-exports.getReviewByIdModal = async (uid, product_id) => {
-  try {
-    const connection = await connectToDatabase();
-    const query = "SELECT * FROM rajlaxmi_feedback WHERE uid = ? AND product_id = ?";
-    const [rows] = await connection.execute(query, [uid, product_id]);
-
-    return rows.length ? rows[0] : null; // Return first review or null if not found
-  } catch (error) {
-    console.error("Error fetching review by ID:", error);
-    throw error;
+  } finally {
+    if (connection) await connection.end(); // Close connection to prevent leaks
   }
 };

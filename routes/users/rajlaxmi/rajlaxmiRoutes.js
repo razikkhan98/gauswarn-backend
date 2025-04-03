@@ -45,10 +45,8 @@ router.post("/contact", contactController.userContact);
 router.post("/feedback", feedbackController.feedback);
 
 // Get All Feedback
-router.get("/getAllFeedback/:id", feedbackController.getReviews)
+router.get("/getAllFeedback/:product_id", feedbackController.getReviews)
 
-// Feedback by id
-// router.get("/reviews/:uid/:product_id", feedbackController.getReviewById);
 
 // Payment
 // phonePe routes
