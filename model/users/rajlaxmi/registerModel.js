@@ -3,7 +3,6 @@ const { withConnection } = require("../../../utils/helper");
 
 
 // Check if the user exists in uid
-
 exports.findUserByUid = async (uid) => {
   try {
     // const connection = await connectToDatabase();

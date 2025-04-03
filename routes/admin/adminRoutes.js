@@ -2,7 +2,7 @@
 
 const express = require("express");
 const router = express.Router();
-const productController = require("../../controllers/users/gauswarn/productController");
+const productController = require("../../controllers/users/rajlaxmi/productController");
 const contactController = require("../../controllers/users/gauswarn/contactController");
 const registerController = require("../../controllers/admin/registerController");
 const loginController = require("../../controllers/admin/loginController");
@@ -27,31 +27,31 @@ router.post("/forgetPassword", forgotPasswordController.forgetPassword);
 router.post("/reset", forgotPasswordController.passwordReset);
 
 // add new Product
-router.post("/createProduct", authMiddleware, productController.addProduct);
+router.post("/createProduct", productController.addProduct);
 
 // get all products
-router.get("/getAllProduct", authMiddleware, productController.getAllProducts);
+// router.get("/getAllProduct", productController.getAllProducts);
 
 // get single by id
-router.post(
-  "/getProductById/:id",
-  authMiddleware,
-  productController.getProductById
-);
+// router.post(
+//   "/getProductById/:id",
+//   authMiddleware,
+//   productController.getProductById
+// );
 
 // update single by id
-router.post(
-  "/updateProductById/:id",
-  authMiddleware,
-  productController.updateProduct
-);
+// router.post(
+//   "/updateProductById/:id",
+//   authMiddleware,
+//   productController.updateProduct
+// );
 
-// delete
-router.post(
-  "/deleteProductById/:id",
-  authMiddleware,
-  productController.deleteProduct
-);
+// // delete
+// router.post(
+//   "/deleteProductById/:id",
+//   authMiddleware,
+//   productController.deleteProduct
+// );
 
 // Contact
 router.get("/getAllContact", authMiddleware, contactController.getAllContact);

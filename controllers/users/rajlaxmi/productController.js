@@ -5,55 +5,55 @@ const productModel = require("../../../model/users/rajlaxmi/productModel");
 exports.addProduct = async (req, res) => {
   try {
     const {
-      uid,
       product_name,
       product_description,
       product_price,
-      product_quantity,
+      product_weight, // Array: [ 5KG, 10KG, 15KG, 20KG ]
       product_stock,
       product_category,
       product_image
-
     } = req.body;
-    
-    // Validation
+
+    // **Validation Check**
     if (
-      !uid &&
-      !product_name &&
-      !product_description &&
-      !product_price &&
-      !product_quantity &&
-      !product_stock &&
-      !product_category&&
-      !product_image
+      !product_name || 
+      !product_description || 
+      !product_price || 
+      !product_weight || 
+      !product_stock || 
+      !product_category
     ) {
       return res.status(400).json({ message: "All fields are required" });
     }
-    
-    // new user add product
-    const productUser = {
-      uid,
+
+    // **Convert product_weight array to JSON**
+    const productWeightJSON = JSON.stringify(product_weight);
+
+    // **Create Product Object**
+    const productData = {
       product_name,
       product_description,
       product_price,
-      product_quantity,
+      product_weight: productWeightJSON, // Store as JSON
       product_stock,
       product_category,
       product_image
     };
-    console.log(productUser);
-    
-    await productModel.addProduct(productUser);
+
+    // **Insert Product into Database**
+    await productModel.addProduct(productData);
+
     res.status(201).json({
       success: true,
       message: "Product created successfully!",
-    //   productId,
     });
+
   } catch (error) {
     console.error("Error creating product:", error);
-    res.json({ error: "Failed to create product" });
+    res.status(500).json({ error: "Failed to create product" }); // Set correct status code
   }
 };
+
 
 // Get All Products
 exports.getAllProducts = async (req, res) => {

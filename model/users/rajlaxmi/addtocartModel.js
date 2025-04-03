@@ -99,7 +99,7 @@ exports.updateCartItem = async (
 
 
 // Function to remove an item from the cart
-exports.removeFromCart = async (uid, product_id) => {
+exports.deleteCartItem = async (uid, product_id) => {
   try {
     const connection = await connectToDatabase();
     const query = `DELETE FROM rajlaxmi_addtocart WHERE product_id = ? AND uid = ?`;
@@ -127,5 +127,21 @@ exports.getAllCarts = async () => {
     return carts;
   } catch (error) {
     throw new Error(error.message);
+  }
+};
+
+
+exports.getCartItemsByUserId = async (uid) => {
+  try {
+    const connection = await connectToDatabase(); // Ensure database connection
+    const query = `SELECT * FROM rajlaxmi_addtocart WHERE uid = ?`;
+    
+    const [rows] = await connection.execute(query, [uid]);
+    
+    return rows; // Return the cart items array
+
+  } catch (error) {
+    console.error("Error in getCartItemsByUserId:", error);
+    throw error;
   }
 };

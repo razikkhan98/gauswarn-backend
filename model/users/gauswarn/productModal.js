@@ -2,6 +2,7 @@ const { withConnection } = require("../../../utils/helper");
 
 // Add Product
 exports.addProduct = async (
+  product_id,
   product_name,
   product_description,
   product_price,
@@ -19,11 +20,12 @@ exports.addProduct = async (
     return await withConnection(async (connection) => {
       const query = `
     INSERT INTO gauswarn_product 
-    (product_name, product_description, product_price, product_quantity, product_stock, product_category, product_website_name , product_image) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    (product_id ,product_name, product_description, product_price, product_quantity, product_stock, product_category, product_website_name , product_image) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)
 `;
 
       const [result] = await connection.execute(query, [
+        product_id,
         product_name,
         product_description,
         product_price,

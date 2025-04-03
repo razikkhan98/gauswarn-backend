@@ -1,51 +1,50 @@
 const { connectToDatabase } = require("../../../config/dbConnection");
 
 // Add Product
-exports.addProduct = async (product) => {
-  const {
-    uid,
-    product_name,
-    product_description,
-    product_price,
-    product_quantity,
-    product_stock,
-    product_category,
-    product_image
-  } = product;
+const { v4: uuidv4 } = require("uuid"); // Import UUID package
+const { withConnection } = require("../../../utils/helper");
 
+exports.addProduct = async (
+  product_name,
+  product_description,
+  product_price,
+  product_weight, // Array: [ 5KG, 10KG, 15KG, 20KG ]
+  product_stock,
+  product_category,
+  product_image
+) => {
   try {
-    // Convert base64 array to JSON string
-    const productImageJSON = JSON.stringify(product_image);
+    // Generate a unique product_id
+    const product_id = uuidv4();
 
-    const connection = await connectToDatabase();
-    const query = `
-    INSERT INTO rajlaxmi_product (
-    uid, 
-    product_name, 
-    product_description, 
-    product_price, 
-    product_quantity, 
-    product_stock, 
-    product_category, 
-    product_image) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    // Convert product_weight array to JSON string
+    const productWeightJSON = JSON.stringify(product_weight);
 
-    const [result] = await connection.execute(query, [
-      uid,
-      product_name,
-      product_description,
-      product_price,
-      product_quantity,
-      product_stock,
-      product_category,
-      productImageJSON
-    ]);
-    return result.insertId;
+    return await withConnection(async (connection) => {
+      const query = `
+      INSERT INTO gauswarn_product 
+      (product_id, product_name, product_description, product_price, product_weight, product_stock, product_category, product_image) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
 
+      const [result] = await connection.execute(query, [
+        product_id,
+        product_name,
+        product_description,
+        product_price,
+        productWeightJSON,
+        product_stock,
+        product_category,
+        product_image
+      ]);
+
+      return product_id; // Return the unique product_id
+    });
   } catch (error) {
     throw new Error(error.message);
   }
 };
+
 
 
 // Get All Products

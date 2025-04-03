@@ -1,48 +1,7 @@
-// const asyncHandler = require("express-async-handler");
-// const feedbackModel = require("../../../model/users/rajlaxmi/feedbackModel");
-
-// exports.feedback =asyncHandler(async(req ,res)=>{
-// try{
-//     const {
-//     uid,
-//     user_name,
-//     user_email,
-//     feedback
-// } = req.body;
-
-// //Validation
-// if(!uid && !user_name && !user_email && !feedback){
-//    return res. status(400).json({message: "Please provide all required fileds"});
-// }
-
-// // New user feedback
-// const newfeedback = {
-//     uid,
-//     user_name,
-//     user_email,
-//     feedback
-// }
-//  await feedbackModel.feedback(newfeedback);
-//  return res.status(200).json({success: true , message: "feedback Successfully"});
-// }catch(error){
-//     console.error("Database Error", error);
-//     throw error;
-// }
-// });
-
-// // Get All Feedback
-// exports.getAllFeedback = async (req, res) => {
-//   try {
-//     const feedback = await feedbackModel.getAllFeedback();
-//     res.status(200).json({ feedback });
-//   } catch (error) {
-//     console.error("Error fetching feedback:", error);
-//     res.json({ error: "Failed to fetch feedback" });
-//   }
-// };
 
 const asyncHandler = require("express-async-handler");
 const reviewModel = require("../../../model/users/rajlaxmi/feedbackModel");
+const registerModel = require("../../../model/users/rajlaxmi/registerModel");
 
 // Add a new review
 exports.feedback = asyncHandler(async (req, res) => {
@@ -57,6 +16,11 @@ exports.feedback = asyncHandler(async (req, res) => {
         .json({ message: "Name, email, and rating are required" });
     }
 
+     // Check uid in database
+        const user = await registerModel.findUserByUid(uid);
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
 
     const reviewId = await reviewModel.addReview(
       uid,
@@ -78,18 +42,17 @@ exports.feedback = asyncHandler(async (req, res) => {
 });
 
 // Fetch reviews
-
 exports.getReviews = asyncHandler(async (req, res) => {
   try {
-    const { uid, product_id } = req.query;
+    const { product_id } = req.query;
 
-    if (!uid || !product_id) {
+    if (product_id) {
       return res
         .status(400)
-        .json({ message: "uid and product_id are required." });
+        .json({ message: "product_id are required." });
     }
 
-    const reviews = await reviewModel.getReviewsByProduct(uid, product_id);
+    const reviews = await reviewModel.getReviewsByProduct(product_id);
 
     if (!reviews?.length) {
       return res.status(200).json({
@@ -135,6 +98,8 @@ exports.getReviews = asyncHandler(async (req, res) => {
   }
 });
 
+
+
 // Review get By Id
 exports.getReviewById = asyncHandler(async (req, res) => {
   try {
@@ -145,13 +110,10 @@ exports.getReviewById = asyncHandler(async (req, res) => {
         .status(400)
         .json({ message: "uid and product_id are required" });
     }
-
     const review = await reviewModel.getReviewByIdModal(uid, product_id);
-
     if (!review) {
       return res.status(404).json({ message: "Review not found" });
     }
-
     res.status(200).json({ review });
   } catch (error) {
     console.error("Error fetching review:", error);

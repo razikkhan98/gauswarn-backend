@@ -30,10 +30,10 @@ router.post("/login", loginController.userLogin);
 router.post("/addtocart", addtocartController.addToCart);
 
 // // User Add to cart remove
-// router.delete("/removecart", addtocartController.deleteCartItem);
+router.delete("/removecart", addtocartController.deleteCartItem);
 
 // //  Update cart item
-// router.put("/updateCart", addtocartController.updateCartItem);
+router.put("/updateCart", addtocartController.updateCartItem);
 
 // Get cart
 router.get("/getAllCart", addtocartController.getAllCarts);
@@ -45,23 +45,16 @@ router.post("/contact", contactController.userContact);
 router.post("/feedback", feedbackController.feedback);
 
 // Get All Feedback
-router.get("/getAllFeedback", feedbackController.getReviews)
+router.get("/getAllFeedback/:id", feedbackController.getReviews)
 
 // Feedback by id
-router.get("/reviews/:uid/:product_id", feedbackController.getReviewById);
+// router.get("/reviews/:uid/:product_id", feedbackController.getReviewById);
 
 // Payment
 // phonePe routes
 router.post("/create-order", paymentController.createPaymentAndGenerateUrl);
 router.post("/status", paymentController.getPhonePeUrlStatusAndUpdatePayment);
 
-
-
-// Product 
-router.post("/product", prodcutController.addProduct);
-
-// Get All Product 
-router.get("/getAllProduct", prodcutController.getAllProducts)
 
 // Add wishlist 
 router.post("/wishlist", wishlistController.addWishlist);
