@@ -11,16 +11,16 @@ exports.addProduct = async (req, res) => {
       product_weight, // Array: [ 5KG, 10KG, 15KG, 20KG ]
       product_stock,
       product_category,
-      product_image
+      product_image,
     } = req.body;
 
     // **Validation Check**
     if (
-      !product_name || 
-      !product_description || 
-      !product_price || 
-      !product_weight || 
-      !product_stock || 
+      !product_name ||
+      !product_description ||
+      !product_price ||
+      !product_weight ||
+      !product_stock ||
       !product_category
     ) {
       return res.status(400).json({ message: "All fields are required" });
@@ -37,7 +37,7 @@ exports.addProduct = async (req, res) => {
       product_weight: productWeightJSON, // Store as JSON
       product_stock,
       product_category,
-      product_image
+      product_image,
     };
 
     // **Insert Product into Database**
@@ -47,13 +47,11 @@ exports.addProduct = async (req, res) => {
       success: true,
       message: "Product created successfully!",
     });
-
   } catch (error) {
     console.error("Error creating product:", error);
     res.status(500).json({ error: "Failed to create product" }); // Set correct status code
   }
 };
-
 
 // Get All Products
 exports.getAllProducts = async (req, res) => {
@@ -63,5 +61,39 @@ exports.getAllProducts = async (req, res) => {
   } catch (error) {
     console.error("Error fetching products:", error);
     res.json({ error: "Failed to fetch products" });
+  }
+};
+
+exports.getAllProductsWithFeedback = async (req, res) => {
+  try {
+    const products = await productModel.getAllProductsWithFeedback();
+    res.status(200).json({ products });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.json({ error: "Failed to fetch products" });
+  }
+};
+
+exports.updateProduct = async (req, res) => {
+  try {
+    const isUpdated = await productModel.updateProduct(req.body);
+    if (!isUpdated) return res.json({ message: "Product not found" });
+    res.status(200).json({ message: "Product updated successfully!" });
+  } catch (error) {
+    console.error("Error updating product:", error);
+    res.json({ error: "Failed to update product" });
+  }
+};
+
+exports.deleteProduct = async (req, res) => {
+  try {
+    const { product_id } = req.body;
+    const isDeleted = await productModel.deleteProduct(product_id);
+    if (!isDeleted) return res.json({ message: "Product not found" });
+
+    res.status(200).json({ message: "Product deleted successfully!" });
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    res.json({ error: "Failed to delete product" });
   }
 };
