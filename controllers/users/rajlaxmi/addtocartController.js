@@ -88,8 +88,8 @@
 //       !product_name ||
 //       !product_quantity ||
 //       !product_weight ||
-//       !product_price 
-      
+//       !product_price
+
 //     ) {
 //       return res
 //         .status(400)
@@ -174,8 +174,6 @@
 //   }
 // };
 
-
-
 const asyncHandler = require("express-async-handler");
 const addtocartModel = require("../../../model/users/rajlaxmi/addtocartModel");
 const registerModel = require("../../../model/users/rajlaxmi/registerModel");
@@ -192,8 +190,17 @@ exports.addToCart = asyncHandler(async (req, res) => {
       product_quantity,
     } = req.body;
 
-    if (!uid || !product_id || !product_name || !product_price || !product_weight || !product_quantity) {
-      return res.status(400).json({ message: "Missing required fields in cart item" });
+    if (
+      !uid ||
+      !product_id ||
+      !product_name ||
+      !product_price ||
+      !product_weight ||
+      !product_quantity
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Missing required fields in cart item" });
     }
 
     // Validate user
@@ -201,13 +208,25 @@ exports.addToCart = asyncHandler(async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     // Check if the product already exists in the cart
-    const cartItem = await addtocartModel.findCartItem(product_id, uid);
+    // const cartItem = await addtocartModel.findCartItem(product_id, uid);
+
+    const cartItem = await addtocartModel.findCartItemPlusWait(
+      product_id,
+      uid,
+      product_weight
+    );
 
     if (cartItem) {
       const newQuantity = cartItem.product_quantity + product_quantity;
       const newTotalAmount = cartItem.product_price * newQuantity;
 
-      await addtocartModel.updateCartItem(uid, product_id, newQuantity, newTotalAmount);
+      await addtocartModel.updateCartItem(
+        uid,
+        product_id,
+        newQuantity,
+        newTotalAmount,
+        product_weight
+      );
     } else {
       await addtocartModel.addCartItem({
         uid,
@@ -223,28 +242,50 @@ exports.addToCart = asyncHandler(async (req, res) => {
     res.status(200).json({ message: "Added to cart successfully" });
   } catch (error) {
     console.error("Database error:", error);
-    res.status(500).json({ message: "Server error, failed to add to cart", error });
+    res
+      .status(500)
+      .json({ message: "Server error, failed to add to cart", error });
   }
 });
 
 // Update Cart Item
 exports.updateCartItem = asyncHandler(async (req, res) => {
   try {
-    const { uid, product_id, product_quantity, product_price } = req.body;
+    const { uid, product_id, product_quantity, product_price, product_weight } =
+      req.body;
 
-    if (!uid || !product_id || !product_quantity || !product_price) {
-      return res.status(400).json({ message: "Please provide all required fields" });
+    if (
+      !uid ||
+      !product_id ||
+      !product_quantity ||
+      !product_price ||
+      !product_weight
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Please provide all required fields" });
     }
 
     // Validate user
     const user = await registerModel.findUserByUid(uid);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const cartItem = await addtocartModel.findCartItem(product_id, uid);
-    if (!cartItem) return res.status(404).json({ message: "Cart item not found" });
+    const cartItem = await addtocartModel.findCartItemPlusWait(
+      product_id,
+      uid,
+      product_weight
+    );
+    if (!cartItem)
+      return res.status(404).json({ message: "Cart item not found" });
 
     const product_total_amount = product_price * product_quantity;
-    const updated = await addtocartModel.updateCartItem(uid, product_id, product_quantity, product_total_amount);
+    const updated = await addtocartModel.updateCartItem(
+      uid,
+      product_id,
+      product_quantity,
+      product_total_amount,
+      product_weight
+    );
 
     if (updated) {
       res.status(200).json({ message: "Cart item updated successfully" });
@@ -253,7 +294,9 @@ exports.updateCartItem = asyncHandler(async (req, res) => {
     }
   } catch (error) {
     console.error("Error updating cart item:", error);
-    res.status(500).json({ message: "Server error, failed to update cart item" });
+    res
+      .status(500)
+      .json({ message: "Server error, failed to update cart item" });
   }
 });
 
@@ -263,7 +306,9 @@ exports.deleteCartItem = asyncHandler(async (req, res) => {
     const { uid, product_id } = req.body;
 
     if (!uid || !product_id) {
-      return res.status(400).json({ message: "Please provide all required fields" });
+      return res
+        .status(400)
+        .json({ message: "Please provide all required fields" });
     }
 
     // Validate user
@@ -278,7 +323,9 @@ exports.deleteCartItem = asyncHandler(async (req, res) => {
     }
   } catch (error) {
     console.error("Error removing cart item:", error);
-    res.status(500).json({ message: "Server error, failed to remove cart item" });
+    res
+      .status(500)
+      .json({ message: "Server error, failed to remove cart item" });
   }
 });
 

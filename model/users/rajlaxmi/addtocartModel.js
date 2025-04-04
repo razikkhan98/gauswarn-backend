@@ -18,8 +18,6 @@
 //   }
 // };
 
-
-
 // // Add a new item to the cart
 // exports.addCartItem = async (cartItem) => {
 //   try {
@@ -35,7 +33,7 @@
 
 //     const connection = await connectToDatabase();
 //     const query = `INSERT INTO rajlaxmi_addtocart (
-//           uid,  
+//           uid,
 //           product_id,
 //           product_name,
 //           product_price,
@@ -73,8 +71,8 @@
 //     connection = await connectToDatabase();
 
 //     const query = `
-//       UPDATE rajlaxmi_addtocart 
-//       SET product_quantity = ?, product_total_amount = ? 
+//       UPDATE rajlaxmi_addtocart
+//       SET product_quantity = ?, product_total_amount = ?
 //       WHERE product_id = ? AND uid = ? AND product_name = ?
 //     `;
 
@@ -96,7 +94,6 @@
 //     }
 //   }
 // };
-
 
 // // Function to remove an item from the cart
 // exports.deleteCartItem = async (uid, product_id) => {
@@ -130,14 +127,13 @@
 //   }
 // };
 
-
 // exports.getCartItemsByUserId = async (uid) => {
 //   try {
 //     const connection = await connectToDatabase(); // Ensure database connection
 //     const query = `SELECT * FROM rajlaxmi_addtocart WHERE uid = ?`;
-    
+
 //     const [rows] = await connection.execute(query, [uid]);
-    
+
 //     return rows; // Return the cart items array
 
 //   } catch (error) {
@@ -190,14 +186,21 @@ exports.addCartItem = async (cartItem) => {
 };
 
 // Update cart item quantity and total amount
-exports.updateCartItem = async (uid, product_id, product_quantity, product_total_amount) => {
+exports.updateCartItem = async (
+  uid,
+  product_id,
+  product_quantity,
+  product_total_amount,
+  product_weight
+) => {
   let connection;
   try {
     connection = await connectToDatabase();
-    const query = `UPDATE rajlaxmi_addtocart SET product_quantity = ?, product_total_amount = ? WHERE product_id = ? AND uid = ?`;
+    const query = `UPDATE rajlaxmi_addtocart SET product_quantity = ?, product_total_amount = ?, product_weight = ? WHERE product_id = ? AND uid = ? AND product_weight = ?`;
     const [result] = await connection.execute(query, [
       product_quantity,
       product_total_amount,
+      product_weight,
       product_id,
       uid,
     ]);
@@ -237,7 +240,29 @@ exports.getAllCarts = async () => {
 // Get cart items by user ID
 exports.getCartItemsByUserId = async (uid) => {
   const connection = await connectToDatabase();
-  const [rows] = await connection.execute("SELECT * FROM rajlaxmi_addtocart WHERE uid = ?", [uid]);
+  const [rows] = await connection.execute(
+    "SELECT * FROM rajlaxmi_addtocart WHERE uid = ?",
+    [uid]
+  );
   await connection.end();
   return rows;
+};
+
+exports.findCartItemPlusWait = async (product_id, uid, product_weight) => {
+  let connection;
+  try {
+    connection = await connectToDatabase();
+    const query = `SELECT * FROM rajlaxmi_addtocart WHERE product_id = ? AND uid = ? AND product_weight = ?`;
+    const [rows] = await connection.execute(query, [
+      product_id,
+      uid,
+      product_weight,
+    ]);
+    return rows.length > 0 ? rows[0] : null;
+  } catch (error) {
+    console.error("Error in findCartItem:", error);
+    throw error;
+  } finally {
+    if (connection) await connection.end();
+  }
 };
