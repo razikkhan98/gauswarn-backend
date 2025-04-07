@@ -196,13 +196,18 @@ exports.updateCartItem = async (
   let connection;
   try {
     connection = await connectToDatabase();
-    const query = `UPDATE rajlaxmi_addtocart SET product_quantity = ?, product_total_amount = ?, product_weight = ? WHERE product_id = ? AND uid = ? AND product_weight = ?`;
+    const query = `UPDATE rajlaxmi_addtocart 
+    SET product_quantity = ?, 
+        product_total_amount = ?, 
+        product_weight = ? 
+    WHERE product_id = ? AND uid = ? AND product_weight = ?`;
     const [result] = await connection.execute(query, [
       product_quantity,
       product_total_amount,
       product_weight,
       product_id,
       uid,
+      product_weight,
     ]);
     return result.affectedRows > 0;
   } catch (error) {
