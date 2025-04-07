@@ -14,6 +14,8 @@ exports.addProduct = async (productData) => {
       product_stock,
       product_category,
       product_image,
+      product_tax,
+      product_final_price
     } = productData;
 
     // Generate a unique product_id
@@ -26,8 +28,8 @@ exports.addProduct = async (productData) => {
     return await withConnection(async (connection) => {
       const query = `
       INSERT INTO rajlaxmi_product 
-      (product_id, product_name, product_description, product_price, product_weight, product_stock, product_category, product_image) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      (product_id, product_name, product_description, product_price, product_weight, product_stock, product_category, product_image,product_tax,product_final_price) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?)
     `;
 
       const [result] = await connection.execute(query, [
@@ -39,6 +41,8 @@ exports.addProduct = async (productData) => {
         product_stock,
         product_category,
         product_image,
+        product_tax,
+        product_final_price
       ]);
 
       return product_id; // Return the unique product_id
@@ -74,6 +78,7 @@ exports.getAllProductsWithFeedback = async () => {
         p.product_stock,
         p.product_category,
         p.product_image,
+        p.product_tax,
         GROUP_CONCAT(f.rating SEPARATOR ', ') AS feedback_ratings,
         GROUP_CONCAT(f.feedback SEPARATOR ', ') AS feedbacks,
         GROUP_CONCAT(f.user_name SEPARATOR ', ') AS feedback_user_names,
@@ -128,6 +133,7 @@ exports.updateProduct = async (productData) => {
       product_stock,
       product_category,
       product_image,
+      product_tax,
     } = productData;
 
     const productWeightJSON = JSON.stringify(product_weight);
@@ -143,6 +149,7 @@ exports.updateProduct = async (productData) => {
           product_stock = ?, 
           product_category = ?, 
           product_image = ?
+          product_tax =?
         WHERE product_id = ?
       `;
 
@@ -155,6 +162,7 @@ exports.updateProduct = async (productData) => {
         product_category,
         product_image,
         product_id,
+        product_tax,
       ]);
 
       if (result.affectedRows === 0) {

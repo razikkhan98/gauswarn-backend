@@ -12,6 +12,7 @@ exports.addProduct = async (req, res) => {
       product_stock,
       product_category,
       product_image,
+      product_tax
     } = req.body;
 
     // **Validation Check**
@@ -29,6 +30,10 @@ exports.addProduct = async (req, res) => {
     // **Convert product_weight array to JSON**
     const productWeightJSON = JSON.stringify(product_weight);
 
+      // **Calculate Final Price (Including Tax)**
+    const taxAmount = (product_price * product_tax) / 100;
+    const finalPrice = product_price + taxAmount;
+
     // **Create Product Object**
     const productData = {
       product_name,
@@ -38,6 +43,8 @@ exports.addProduct = async (req, res) => {
       product_stock,
       product_category,
       product_image,
+      product_tax,
+      product_final_price: finalPrice // Store final price including tax
     };
 
     // **Insert Product into Database**

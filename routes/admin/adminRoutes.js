@@ -10,7 +10,6 @@ const feedbackController = require("../../controllers/users/gauswarn/feedbackCon
 const userInfoController = require("../../controllers/admin/userInfoController");
 const forgotPasswordController = require("../../controllers/admin/forgotPasswordController");
 const monthlyReportController = require("../../controllers/admin/monthlyReportController");
-const offlineCustomerController = require("../../controllers/admin/offlineCustomerController");
 const { errorHandler } = require("../../middlewares/errorHandler");
 const { authMiddleware } = require("../../middlewares/authMiddleware");
 
@@ -111,40 +110,6 @@ router.get(
 // get all Monthly Report
 router.get("/getAllSales", authMiddleware, monthlyReportController.getAllSales);
 
-// ADD new order offline customer
-router.post(
-  "/addOfflineCustomer",
-  authMiddleware,
-  offlineCustomerController.addOfflineCustomer
-);
-
-// get All offline customer
-router.get(
-  "/getAllOfflineCustomer",
-  authMiddleware,
-  offlineCustomerController.getAllOfflineCustomers
-);
-
-// fetch single offline customer by Id
-router.post(
-  "/getOfflineCustomerById/:id",
-  authMiddleware,
-  offlineCustomerController.getOfflineCustomerById
-);
-
-// fetch single offline customer by Id and update
-router.put(
-  "/updateOfflineCustomer/:id",
-  authMiddleware,
-  offlineCustomerController.updateOfflineCustomer
-);
-
-// fetch single offline customer by Id and delete
-router.delete(
-  "/deleteOfflineCustomerById/:id",
-  authMiddleware,
-  offlineCustomerController.deleteOfflineCustomerById
-);
 
 router.get("/me", authMiddleware, registerController.meAPI);
 
