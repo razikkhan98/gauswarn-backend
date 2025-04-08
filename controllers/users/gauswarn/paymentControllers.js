@@ -14,8 +14,6 @@ const jwt = require("jsonwebtoken");
 
 const { withConnection } = require("../../../utils/helper");
 
-
-
 const createPaymentAndGenerateUrl = async (req, res) => {
   // const { status, amount, name, mobileNumber } = req.body;
   const {
@@ -31,6 +29,7 @@ const createPaymentAndGenerateUrl = async (req, res) => {
     user_total_amount,
     purchase_price,
     product_quantity,
+    cart,
   } = req.body;
 
   // Validate the payload
@@ -48,9 +47,7 @@ const createPaymentAndGenerateUrl = async (req, res) => {
     !purchase_price ||
     !product_quantity
   ) {
-    return res
-      
-      .json({ success: false, message: "All fields are required." });
+    return res.json({ success: false, message: "All fields are required." });
   }
 
   const date = moment().format("YYYY-MM-DD");
@@ -86,6 +83,19 @@ const createPaymentAndGenerateUrl = async (req, res) => {
     // Get the inserted user ID (if needed for future use)
     const userId = result.insertId;
 
+    const getOrderIdByShopmozy = await generateShopmozyAPI(
+      user_name,
+      user_mobile_num,
+      user_email,
+      user_state,
+      user_city,
+      user_house_number,
+      user_landmark,
+      user_pincode,
+      cart,
+      date
+    );
+
     // Create a unique order ID
     const orderId = uuidv4();
 
@@ -115,13 +125,12 @@ const createPaymentAndGenerateUrl = async (req, res) => {
       mobileNumber: user_mobile_num,
       amount: amountInPaise, // Use the amount in paise for PhonePe
       merchantTransactionId: orderId,
-      redirectUrl: `${process.env.REDIRECT_URL_TO_BACKEND_API}/?id=${orderId}&tarnId=${userId}`,
+      redirectUrl: `${process.env.REDIRECT_URL_TO_BACKEND_API}/?id=${orderId}&tarnId=${userId}&mobNo=${user_mobile_num}&amount=${user_total_amount}&orderId=${getOrderIdByShopmozy}`,
       redirectMode: "POST",
       paymentInstrument: {
         type: "PAY_PAGE",
       },
     };
-    console.log('paymentPayload: ', paymentPayload);
 
     // Encode the payload into Base64 format
     const payload = Buffer.from(JSON.stringify(paymentPayload)).toString(
@@ -147,8 +156,6 @@ const createPaymentAndGenerateUrl = async (req, res) => {
 
     // Make the API request to PhonePe
     const response = await axios.request(option);
-    console.log('response: ', response);
-
 
     // Extract the redirect URL from PhonePe's response
     const redirectUrl = response.data.data.instrumentResponse.redirectInfo.url;
@@ -167,8 +174,6 @@ const createPaymentAndGenerateUrl = async (req, res) => {
       date: moment().format("MMMM Do YYYY, h:mm:ss a"),
     });
   } catch (error) {
-    console.log("error: ", error);
-
     // Send an error response to the client
     res.status(500).json({
       success: false,
@@ -195,6 +200,10 @@ const getPhonePeUrlStatusAndUpdatePayment = async (req, res) => {
   const merchantTransactionId = req?.query?.id;
   const tarnId = req?.query?.tarnId;
 
+  const mobNo = req?.query?.mobNo;
+  const amount = req?.query?.amount;
+  const orderId = req?.query?.orderId;
+
   const keyIndex = process.env.SALT_INDEX;
   const string =
     `/pg/v1/status/${process.env.PHONEPE_MERCHANT_ID}/${merchantTransactionId}` +
@@ -219,7 +228,7 @@ const getPhonePeUrlStatusAndUpdatePayment = async (req, res) => {
     const paymentDetails = response.data;
 
     // Update payment status in the database
-    const query = `UPDATE gauswarn_payment SET status = ?, paymentDetails = ?, isPaymentPaid = ? WHERE users_id = ?`;
+    const query = `UPDATE gauswarn_payment SET status = ?, paymentDetails = ?, isPaymentPaid = ? WHERE user_id = ?`;
     const isPaymentPaid = paymentStatus === "true";
 
     const [result] = await withConnection(async (connection) => {
@@ -232,13 +241,11 @@ const getPhonePeUrlStatusAndUpdatePayment = async (req, res) => {
     });
 
     if (result === 0) {
-      return res
-        
-        .json({ success: false, message: "Payment record not found." });
+      return res.json({ success: false, message: "Payment record not found." });
     }
-
+    // const whatsappApiUrl = `https://bhashsms.com/api/sendmsg.php?user=RAJLAKSHMIBWA&pass=123456&sender=BUZWAP&phone=${user_mobile_num}&text=gauswarn_ghee002&priority=wa&stype=normal&Params=${ordeId},${user_total_amount}&htype=image&url=https://i.ibb.co/p6P86j3J/Whats-App-Image-2025-02-17-at-12-46-41.jpg`;
     if (response?.data?.code === "PAYMENT_SUCCESS") {
-      // res.redirect(`http://bhashsms.com/api/sendmsg.php?user=BhashWapAi&pass=Bwa@123&sender=BUZWAP&phone=7000015122&text=bsl_image&priority=wa&stype=normal&htype=image&url=https://i.ibb.co/7XRmyh9/bhash-logo.png`)
+      const result = await sendWhatsAppMessage(mobNo, orderId, amount);
 
       return res.redirect(process.env.REDIRECT_URL_TO_SUCCESS_PAGE);
     }
@@ -254,6 +261,86 @@ const getPhonePeUrlStatusAndUpdatePayment = async (req, res) => {
     return res.status(500).json({ success: false, error: err.message });
   }
 };
+
+async function sendWhatsAppMessage(user_mobile_num, ordeId, user_total_amount) {
+  const whatsappApiUrl = `https://bhashsms.com/api/sendmsg.php?user=RAJLAKSHMIBWA&pass=123456&sender=BUZWAP&phone=${user_mobile_num}&text=gauswarn_ghee002&priority=wa&stype=normal&Params=${ordeId},${user_total_amount}&htype=image&url=https://i.ibb.co/p6P86j3J/Whats-App-Image-2025-02-17-at-12-46-41.jpg`;
+
+  try {
+    const response = await axios.get(whatsappApiUrl);
+
+    if (!response.status === 200) {
+      throw new Error(`API error: ${response.data.message}`);
+    }
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function generateShopmozyAPI(
+  user_name,
+  user_mobile_num,
+  user_email,
+  user_state,
+  user_city,
+  user_house_number,
+  user_landmark,
+  user_pincode,
+  cart,
+  date
+) {
+  try {
+    const ShippingPayLoad = {
+      order_id: "ordID",
+      order_date: date,
+      order_type: "ESSENTIALS",
+      consignee_name: user_name,
+      consignee_phone: Number(user_mobile_num),
+      consignee_alternate_phone: Number(user_mobile_num),
+      consignee_email: user_email,
+      consignee_address_line_one: user_house_number,
+      consignee_address_line_two: user_landmark,
+      consignee_pin_code: user_pincode,
+      consignee_city: user_city,
+      consignee_state: user_state,
+      product_detail: cart?.map((i) => {
+        return {
+          name: i?.product_name,
+          sku_number: "22",
+          quantity: i?.product_quantity,
+          discount: "",
+          hsn: "#123",
+          unit_price: i?.product_price,
+          product_category: "Ghee",
+        };
+      }),
+      payment_type: "PREPAID",
+      cod_amount: "",
+      shipping_charges: "",
+      weight: 200,
+      length: 10,
+      width: 20,
+      height: 15,
+      warehouse_id: "",
+      gst_ewaybill_number: "",
+      gstin_number: "",
+    };
+
+    const apiResponse = await axios.post(
+      `https://shipping-api.com/app/api/v1/push-order`,
+      ShippingPayLoad,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "private-key": "G0K1PQYBq3Xlph6y48gw",
+          "public-key": "LBYfQgGFRljv1A249H87",
+        },
+      }
+    );
+    return apiResponse?.data?.data?.order_id;
+  } catch (error) {}
+}
 
 module.exports = {
   createPaymentAndGenerateUrl,

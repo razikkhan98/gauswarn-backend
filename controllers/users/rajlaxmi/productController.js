@@ -42,11 +42,12 @@ exports.addProduct = async (req, res) => {
       product_name,
       product_description,
       product_price,
-      product_weight: JSON.stringify(productWeightVariants), // store array of objects
+      product_weight,
       product_stock,
       product_category,
       product_image,
       product_tax,
+      product_final_price: JSON.stringify(productWeightVariants),
     };
 
     await productModel.addProduct(productData);

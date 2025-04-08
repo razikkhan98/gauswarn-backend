@@ -21,9 +21,7 @@ exports.addProduct = async (productData) => {
     // Generate a unique product_id
     const product_id_long = uuidv4();
     const product_id = shortenUUID(product_id_long);
-    // Convert product_weight array to JSON string
-    // const productWeightJSON = JSON.stringify(product_weight);
-    // console.log('productWeightJSON: ', productWeightJSON);
+  
 
     return await withConnection(async (connection) => {
       const query = `
