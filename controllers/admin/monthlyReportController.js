@@ -4,7 +4,7 @@ exports.getAllSales = async (req, res) => {
   try {
     const data =
       await monthlyReportModal.getEveryWeeklyMonthlyEverySixMonthlyData();
-    res.status(200).json({ data });
+    res.json({ data });
     console.log('data: ', data);
     
 

@@ -49,7 +49,7 @@ const createPaymentAndGenerateUrl = async (req, res) => {
     !product_quantity
   ) {
     return res
-      .status(400)
+      
       .json({ success: false, message: "All fields are required." });
   }
 
@@ -233,7 +233,7 @@ const getPhonePeUrlStatusAndUpdatePayment = async (req, res) => {
 
     if (result === 0) {
       return res
-        .status(404)
+        
         .json({ success: false, message: "Payment record not found." });
     }
 

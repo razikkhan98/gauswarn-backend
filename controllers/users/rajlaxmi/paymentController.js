@@ -49,7 +49,7 @@ const createPaymentAndGenerateUrl = async (req, res) => {
       !purchase_price
     ) {
       return res
-        .status(400)
+        
         .json({ success: false, message: "All fields are required." });
     }
 
@@ -140,7 +140,7 @@ const createPaymentAndGenerateUrl = async (req, res) => {
     }
 
     res
-    .status(200)
+    
     .json({
       status:200,
       success: true,

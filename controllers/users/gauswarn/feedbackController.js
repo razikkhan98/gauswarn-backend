@@ -7,7 +7,7 @@ exports.feedback = asyncHandler(async (req, res) => {
     const { name, email, rating, feedback } = req.body;
     if (!name || !email || !rating) {
       return res
-        .status(400)
+        
         .json({ message: "Name, email, and rating are required" });
     }
 
@@ -29,7 +29,7 @@ exports.getReviews = asyncHandler(async (req, res) => {
     const reviews = await reviewModel.getAllReviews();
 
     if (!reviews?.length) {
-      return res.status(200).json({
+      return res.json({
         averageRating: 0,
         totalReviews: 0,
         ratingsBreakdown: {
@@ -53,7 +53,7 @@ exports.getReviews = asyncHandler(async (req, res) => {
       reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews ||
       0;
 
-    res.status(200).json({
+    res.json({
       averageRating: parseFloat(averageRating.toFixed(2)),
       totalReviews,
       ratingsBreakdown: {
@@ -80,9 +80,9 @@ exports.getReviewById = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const review = await reviewModel.getReviewByIdModal(id);
     if (!review) {
-      return res.status(404).json({ message: "Review not found" });
+      return res.json({ message: "Review not found" });
     }
-    res.status(200).json({ review });
+    res.json({ review });
   } catch (error) {
     console.error("Error fetching review:", error);
     res.status(500).json({ error: "Failed to fetch review" });
@@ -102,9 +102,9 @@ exports.updateReviewById = asyncHandler(async (req, res) => {
       feedback
     );
     if (!isUpdated) {
-      return res.status(404).json({ message: "Review not found" });
+      return res.json({ message: "Review not found" });
     }
-    res.status(200).json({ message: "Review updated successfully!" });
+    res.json({ message: "Review updated successfully!" });
   } catch (error) {
     console.error("Error updating review:", error);
     res.status(500).json({ error: "Failed to update review" });
@@ -117,9 +117,9 @@ exports.deleteReviewById = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const isDeleted = await reviewModel.deleteReviewModal(id);
     if (!isDeleted) {
-      return res.status(404).json({ message: "Review not found" });
+      return res.json({ message: "Review not found" });
     }
-    res.status(200).json({ message: "Review deleted successfully!" });
+    res.json({ message: "Review deleted successfully!" });
   } catch (error) {
     console.error("Error deleting review:", error);
     res.status(500).json({ error: "Failed to delete review" });

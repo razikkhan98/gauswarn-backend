@@ -33,7 +33,7 @@ router.post("/addtocart", addtocartController.addToCart);
 router.delete("/removecart", addtocartController.deleteCartItem);
 
 // //  Update cart item
-router.put("/updateCart", addtocartController.updateCartItem);
+router.post("/updateCart", addtocartController.updateCartItem);
 
 // Get cart
 router.get("/getAllCart", addtocartController.getAllCarts);

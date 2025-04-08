@@ -8,14 +8,13 @@ exports.addProduct = async (req, res) => {
       product_name,
       product_description,
       product_price,
-      product_weight, // Array: [ 5KG, 10KG, 15KG, 20KG ]
+      product_weight, // Array of weights like ["5KG", "10KG"]
       product_stock,
       product_category,
       product_image,
-      product_tax
+      product_tax,
     } = req.body;
 
-    // **Validation Check**
     if (
       !product_name ||
       !product_description ||
@@ -24,39 +23,41 @@ exports.addProduct = async (req, res) => {
       !product_stock ||
       !product_category
     ) {
-      return res.status(400).json({ message: "All fields are required" });
+      return res.json({ message: "All fields are required" });
     }
 
-    // **Convert product_weight array to JSON**
-    const productWeightJSON = JSON.stringify(product_weight);
+    const productWeightVariants = product_weight.map((weight) => {
+      const taxAmount = (Number(product_price) * Number(product_tax)) / 100;
+      const finalPrice = product_price + taxAmount;
 
-      // **Calculate Final Price (Including Tax)**
-    const taxAmount = (product_price * product_tax) / 100;
-    const finalPrice = product_price + taxAmount;
+      return {
+        weight,
+        base_price: product_price,
+        tax: taxAmount,
+        final_price: finalPrice,
+      };
+    });
 
-    // **Create Product Object**
     const productData = {
       product_name,
       product_description,
       product_price,
-      product_weight: productWeightJSON, // Store as JSON
+      product_weight: JSON.stringify(productWeightVariants), // store array of objects
       product_stock,
       product_category,
       product_image,
       product_tax,
-      product_final_price: finalPrice // Store final price including tax
     };
 
-    // **Insert Product into Database**
     await productModel.addProduct(productData);
 
-    res.status(201).json({
+    res.json({
       success: true,
       message: "Product created successfully!",
     });
   } catch (error) {
     console.error("Error creating product:", error);
-    res.status(500).json({ error: "Failed to create product" }); // Set correct status code
+    res.json({ error: "Failed to create product" });
   }
 };
 
@@ -64,7 +65,7 @@ exports.addProduct = async (req, res) => {
 exports.getAllProducts = async (req, res) => {
   try {
     const products = await productModel.getAllProducts();
-    res.status(200).json({ products });
+    res.json({ products });
   } catch (error) {
     console.error("Error fetching products:", error);
     res.json({ error: "Failed to fetch products" });
@@ -74,7 +75,7 @@ exports.getAllProducts = async (req, res) => {
 exports.getAllProductsWithFeedback = async (req, res) => {
   try {
     const products = await productModel.getAllProductsWithFeedback();
-    res.status(200).json({ products });
+    res.json({ products });
   } catch (error) {
     console.error("Error fetching products:", error);
     res.json({ error: "Failed to fetch products" });
@@ -85,7 +86,7 @@ exports.updateProduct = async (req, res) => {
   try {
     const isUpdated = await productModel.updateProduct(req.body);
     if (!isUpdated) return res.json({ message: "Product not found" });
-    res.status(200).json({ message: "Product updated successfully!" });
+    res.json({ message: "Product updated successfully!" });
   } catch (error) {
     console.error("Error updating product:", error);
     res.json({ error: "Failed to update product" });
@@ -98,7 +99,7 @@ exports.deleteProduct = async (req, res) => {
     const isDeleted = await productModel.deleteProduct(product_id);
     if (!isDeleted) return res.json({ message: "Product not found" });
 
-    res.status(200).json({ message: "Product deleted successfully!" });
+    res.json({ message: "Product deleted successfully!" });
   } catch (error) {
     console.error("Error deleting product:", error);
     res.json({ error: "Failed to delete product" });

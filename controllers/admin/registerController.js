@@ -17,7 +17,7 @@ exports.adminUserRegister = asyncHandler(async (req, res) => {
     !role
     // || !confirm_password
   ) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.json({ message: "All fields are required" });
   }
 
   try {
@@ -26,7 +26,7 @@ exports.adminUserRegister = asyncHandler(async (req, res) => {
       email
     );
     if (emailExist) {
-      return res.status(400).json({ message: "Email already exist" });
+      return res.json({ message: "Email already exist" });
     }
 
     //hash the password using bcrypt

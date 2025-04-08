@@ -110,7 +110,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
         !product_total_amount ||
         !purchase_price
     ) {
-        return res.status(400).json({
+        return res.json({
             message: "Please provide all required fields",
             date: moment().format("MMMM Do YYYY, h:mm:ss a"),
         });
@@ -196,7 +196,7 @@ exports.updateFromCart = asyncHandler(async (req, res, next) => {
       console.log(req.body)
 
     if (!product_id && !user_id) {
-      return res.status(400).json({
+      return res.json({
         message: "Please provide all required fields updateFromCart",
         date: moment().format("MMMM Do YYYY, h:mm:ss a"),
       });
@@ -206,7 +206,7 @@ exports.updateFromCart = asyncHandler(async (req, res, next) => {
     console.log('cartItem: ', cartItem);
 
     if (!cartItem) {
-      return res.status(404).json({
+      return res.json({
         message: "Cart item not found",
         date: moment().format("MMMM Do YYYY, h:mm:ss a"),
       });

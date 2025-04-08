@@ -19,7 +19,7 @@ console.log(req.body);
     );
     console.log('otp', otp);
     
-    res.status(200).json({ message: "OTP sent your email successfully."});
+    res.json({ message: "OTP sent your email successfully."});
   } catch (error) {
     console.error("Error is sending OTP email:", error);
     res.json({ message: "Server error" , error });
@@ -37,7 +37,7 @@ console.log(req.body)
 
 // Validation: Check if newPassword 
 if (!newPassword) {
-  return res.status(400).json({ message: "New password is required" });
+  return res.json({ message: "New password is required" });
 }
 
 const reset = await forgotPasswordModal.findUserOTP(otp);
@@ -59,7 +59,7 @@ try {
 
 
     // await user.save();
-    res.status(200).json({ message: "password reset successfully" });
+    res.json({ message: "password reset successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

@@ -26,7 +26,7 @@ exports.addProduct = async (req, res) => {
       !product_category&&
       !product_image
     ) {
-      return res.status(400).json({ message: "All fields are required" });
+      return res.json({ message: "All fields are required" });
     }
 
 
@@ -56,7 +56,7 @@ exports.addProduct = async (req, res) => {
 exports.getAllProducts = async (req, res) => {
   try {
     const products = await productModel.getAllProducts();
-    res.status(200).json({ products });
+    res.json({ products });
   } catch (error) {
     console.error("Error fetching products:", error);
     res.json({ error: "Failed to fetch products" });
@@ -71,7 +71,7 @@ exports.getProductById = async (req, res) => {
     if (!product) {
       return res.json({ message: "Product not found" });
     }
-    res.status(200).json({ product });
+    res.json({ product });
   } catch (error) {
     console.error("Error fetching product:", error);
     res.json({ error: "Failed to fetch product" });
@@ -104,7 +104,7 @@ exports.updateProduct = async (req, res) => {
     if (!isUpdated) {
       return res.json({ message: "Product not found" });
     }
-    res.status(200).json({ message: "Product updated successfully!" });
+    res.json({ message: "Product updated successfully!" });
   } catch (error) {
     console.error("Error updating product:", error);
     res.json({ error: "Failed to update product" });
@@ -119,7 +119,7 @@ exports.deleteProduct = async (req, res) => {
     if (!isDeleted) {
       return res.json({ message: "Product not found" });
     }
-    res.status(200).json({ message: "Product deleted successfully!" });
+    res.json({ message: "Product deleted successfully!" });
   } catch (error) {
     console.error("Error deleting product:", error);
     res.json({ error: "Failed to delete product" });

@@ -39,7 +39,7 @@ exports.adminUserLogin = asyncHandler(async (req, res) => {
       }
     );
 
-    return res.status(200).json({
+    return res.json({
       success: true,
       message: "Login successful.",
       accessToken: token,

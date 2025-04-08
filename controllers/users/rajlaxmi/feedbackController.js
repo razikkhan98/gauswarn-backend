@@ -12,14 +12,14 @@ exports.feedback = asyncHandler(async (req, res) => {
 
     if (!uid || !user_name || !user_email || !rating || !product_id) {
       return res
-        .status(400)
+        
         .json({ message: "Name, email, and rating are required" });
     }
 
      // Check uid in database
         const user = await registerModel.findUserByUid(uid);
         if (!user) {
-          return res.status(404).json({ message: "User not found" });
+          return res.json({ message: "User not found" });
         }
 
     const reviewId = await reviewModel.addReview(
@@ -47,14 +47,14 @@ exports.getReviews = asyncHandler(async (req, res) => {
     const { product_id } = req.params;
 
     if (!product_id) {
-      return res.status(400).json({ message: "product_id is required." });
+      return res.json({ message: "product_id is required." });
     }
 
     const reviews = await reviewModel.getReviewsByProduct(product_id);
     console.log('reviews: ', reviews);
 
     if (!reviews?.length) {
-      return res.status(200).json({
+      return res.json({
         averageRating: 0,
         totalReviews: 0,
         ratingsBreakdown: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
@@ -79,7 +79,7 @@ exports.getReviews = asyncHandler(async (req, res) => {
     const getPercentage = (count) =>
       totalReviews > 0 ? parseFloat(((count / totalReviews) * 100).toFixed(2)) : 0;
 
-    res.status(200).json({
+    res.json({
       averageRating: parseFloat(averageRating.toFixed(2)),
       totalReviews,
       ratingsBreakdown: {

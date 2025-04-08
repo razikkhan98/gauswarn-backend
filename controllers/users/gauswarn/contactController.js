@@ -15,7 +15,7 @@ exports.contact = asyncHandler(async (req, res) => {
       !user_subject ||
       !user_message
     ) {
-      return res.status(400).json({ message: "All fields are required." });
+      return res.json({ message: "All fields are required." });
     }
 
     // Prepare new contact data
@@ -46,7 +46,7 @@ exports.contact = asyncHandler(async (req, res) => {
 exports.getAllContact = async (req, res) => {
   try {
     const contact = await contactModel.getAllContact();
-    res.status(200).json({ contact });
+    res.json({ contact });
   } catch (error) {
     console.error("Error fetching contact:", error);
     res.json({ error: "Failed to fetch contact" });

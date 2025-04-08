@@ -10,7 +10,7 @@ exports.userRegister = asyncHandler(async (req, res, next) => {
   // Validate request data
   
   if (!firstName || !lastName || !email || !password || !mobileNumber) {
-    return res.status(400).json({ message: "Please required all fields" });
+    return res.json({ message: "Please required all fields" });
   }
   try {
    

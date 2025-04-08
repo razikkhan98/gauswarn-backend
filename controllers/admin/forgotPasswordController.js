@@ -19,7 +19,7 @@ exports.forgetPassword = asyncHandler(async (req, res) => {
     );
     console.log('otp:------ ', otp);
     
-    res.status(200).json({ message: "OTP sent your email successfully."});
+    res.json({ message: "OTP sent your email successfully."});
   } catch (error) {
     console.error("Error is sending OTP email:", error);
     res.json({ message: "Internal server error" });
@@ -33,7 +33,7 @@ exports.passwordReset = asyncHandler(async (req, res) => {
   //validation
   // Validation: Check if newPassword is provided
   if (!newPassword) {
-    return res.status(400).json({ message: "New password is required" });
+    return res.json({ message: "New password is required" });
   }
 
   const reset = await adminForgotAndResetPasswdModal.findUserOTP(otp);
@@ -58,7 +58,7 @@ exports.passwordReset = asyncHandler(async (req, res) => {
     );
 
     // await user.save();
-    res.status(200).json({ message: msg });
+    res.json({ message: msg });
   } catch (error) {
     console.error(error);
     res.json({ message: "Server error" });

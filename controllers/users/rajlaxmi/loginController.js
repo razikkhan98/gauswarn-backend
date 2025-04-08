@@ -13,7 +13,7 @@ exports.userLogin = asyncHandler(async (req, res) => {
 
   if (!emailmobile || !password) {
     return res
-      .status(400)
+      
       .json({ message: "Email/Mobile and password are required" });
   }
 
@@ -27,13 +27,13 @@ exports.userLogin = asyncHandler(async (req, res) => {
       : await registerModel.findUserByPhone(emailmobile);
 
     if (!user) {
-      return res.status(400).json({ message: "User not found" });
+      return res.json({ message: "User not found" });
     }
 
     // Compare password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.json({ message: "Invalid credentials" });
     }
 
     // Generate JWT token
