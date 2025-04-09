@@ -21,31 +21,31 @@ exports.addProduct = async (productData) => {
     // Generate a unique product_id
     const product_id_long = uuidv4();
     const product_id = shortenUUID(product_id_long);
-  
 
     return await withConnection(async (connection) => {
       const query = `
-      INSERT INTO rajlaxmi_product 
-      (product_id, product_name, product_description, product_price, product_weight, product_stock, product_category, product_image, product_tax, product_final_price) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+        INSERT INTO rajlaxmi_product 
+        (product_id, product_name, product_description, product_price, product_weight, product_stock, product_category, product_image, product_tax, product_final_price) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
 
       const [result] = await connection.execute(query, [
         product_id,
-        product_name,
-        product_description,
-        product_price,
-        product_weight,
-        product_stock,
-        product_category,
-        product_image,
-        product_tax,
-        product_final_price,
+        product_name || null, // Ensure null for missing values
+        product_description || null,
+        product_price || null,
+        (product_weight = JSON.stringify(product_weight) || null),
+        product_stock || null,
+        product_category || null,
+        product_image || null,
+        product_tax || null,
+        product_final_price || null,
       ]);
 
       return product_id; // Return the unique product_id
     });
   } catch (error) {
+    console.log("=====error: ", error);
     throw new Error(error.message);
   }
 };

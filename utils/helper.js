@@ -61,10 +61,16 @@ const shortenUUID = (uuid) => {
   return cleanUuid.substring(0, 5);
 };
 
+// const kgArray = ["5KG", "10KG", "15KG", "20KG"];
+// const ltrArray = ["5LTR", "10LTR", "15LTR", "20LTR"];
+const extractIntegers = (arr) =>
+  arr.map((item) => parseInt(item.match(/\d+/)[0]));
+
 module.exports = {
   createEmailTransporter,
   withConnection,
   calculateProfit,
   connectToDatabase,
   shortenUUID,
+  extractIntegers,
 };

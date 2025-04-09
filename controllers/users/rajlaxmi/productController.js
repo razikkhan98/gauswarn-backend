@@ -1,5 +1,6 @@
 // rajlaxmi // Controller // Product
 const productModel = require("../../../model/users/rajlaxmi/productModel");
+const { extractIntegers } = require("../../../utils/helper");
 
 // Add Product
 exports.addProduct = async (req, res) => {
@@ -14,6 +15,7 @@ exports.addProduct = async (req, res) => {
       product_image,
       product_tax,
     } = req.body;
+    console.log("req.body:==== ", req.body);
 
     if (
       !product_name ||
@@ -25,14 +27,22 @@ exports.addProduct = async (req, res) => {
     ) {
       return res.json({ message: "All fields are required" });
     }
+    // const cleanKgArray = kgArray.map(item => item.split('KG')[0]);
+    // const cleanLtrArray = ltrArray.map(item => item.split('LTR')[0]);
+    const converted_product_weight = await extractIntegers(product_weight);
+    const productWeightVariants = converted_product_weight.map((weight) => {
+      const calculate_price = Number(product_price) * Number(weight);
 
-    const productWeightVariants = product_weight.map((weight) => {
-      const taxAmount = (Number(product_price) * Number(product_tax)) / 100;
-      const finalPrice = product_price + taxAmount;
+      const taxAmount = (Number(calculate_price) * Number(product_tax)) / 100;
+
+      const finalPrice = calculate_price + taxAmount;
+
+      console.log("weight: ", weight);
 
       return {
         weight,
         base_price: product_price,
+        bulk_price: calculate_price,
         tax: taxAmount,
         final_price: finalPrice,
       };
@@ -49,7 +59,6 @@ exports.addProduct = async (req, res) => {
       product_tax,
       product_final_price: JSON.stringify(productWeightVariants),
     };
-
     await productModel.addProduct(productData);
 
     res.json({
