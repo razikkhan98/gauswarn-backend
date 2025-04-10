@@ -25,7 +25,7 @@ exports.addProduct = async (req, res) => {
       !product_stock ||
       !product_category
     ) {
-      return res.json({ message: "All fields are required" });
+      return res.json({ success: false, message: "All fields are required" });
     }
     // const cleanKgArray = kgArray.map(item => item.split('KG')[0]);
     // const cleanLtrArray = ltrArray.map(item => item.split('LTR')[0]);
@@ -67,7 +67,7 @@ exports.addProduct = async (req, res) => {
     });
   } catch (error) {
     console.error("Error creating product:", error);
-    res.json({ error: "Failed to create product" });
+    res.json({ success: false, error: "Failed to create product" });
   }
 };
 
@@ -75,31 +75,32 @@ exports.addProduct = async (req, res) => {
 exports.getAllProducts = async (req, res) => {
   try {
     const products = await productModel.getAllProducts();
-    res.json({ products });
+    res.json({ success: true, products });
   } catch (error) {
     console.error("Error fetching products:", error);
-    res.json({ error: "Failed to fetch products" });
+    res.json({ success: false, error: "Failed to fetch products" });
   }
 };
 
 exports.getAllProductsWithFeedback = async (req, res) => {
   try {
     const products = await productModel.getAllProductsWithFeedback();
-    res.json({ products });
+    res.json({ success: true, products });
   } catch (error) {
     console.error("Error fetching products:", error);
-    res.json({ error: "Failed to fetch products" });
+    res.json({ success: false, error: "Failed to fetch products" });
   }
 };
 
 exports.updateProduct = async (req, res) => {
   try {
     const isUpdated = await productModel.updateProduct(req.body);
-    if (!isUpdated) return res.json({ message: "Product not found" });
-    res.json({ message: "Product updated successfully!" });
+    if (!isUpdated)
+      return res.json({ success: false, message: "Product not found" });
+    res.json({ success: true, message: "Product updated successfully!" });
   } catch (error) {
     console.error("Error updating product:", error);
-    res.json({ error: "Failed to update product" });
+    res.json({ success: false, error: "Failed to update product" });
   }
 };
 
@@ -107,11 +108,12 @@ exports.deleteProduct = async (req, res) => {
   try {
     const { product_id } = req.body;
     const isDeleted = await productModel.deleteProduct(product_id);
-    if (!isDeleted) return res.json({ message: "Product not found" });
+    if (!isDeleted)
+      return res.json({ success: false, message: "Product not found" });
 
-    res.json({ message: "Product deleted successfully!" });
+    res.json({ success: true, message: "Product deleted successfully!" });
   } catch (error) {
     console.error("Error deleting product:", error);
-    res.json({ error: "Failed to delete product" });
+    res.json({ success: false, error: "Failed to delete product" });
   }
 };

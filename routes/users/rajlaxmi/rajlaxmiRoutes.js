@@ -3,14 +3,15 @@
 const express = require("express");
 const router = express.Router();
 const registerController = require("../../../controllers/users/rajlaxmi/registerController");
-const loginController =require("../../../controllers/users/rajlaxmi/loginController");
+const loginController = require("../../../controllers/users/rajlaxmi/loginController");
 const forgotPasswordController = require("../../../controllers/users/rajlaxmi/forgotPasswordController");
 const addtocartController = require("../../../controllers/users/rajlaxmi/addtocartController");
-const contactController  = require("../../../controllers/users/rajlaxmi/contactController");
+const contactController = require("../../../controllers/users/rajlaxmi/contactController");
 const feedbackController = require("../../../controllers/users/rajlaxmi/feedbackController");
 const paymentController = require("../../../controllers/users/rajlaxmi/paymentController");
 const prodcutController = require("../../../controllers/users/rajlaxmi/productController");
 const wishlistController = require("../../../controllers/users/rajlaxmi/wishlistController");
+const addressDetailController = require("../../../controllers/users/rajlaxmi/addressDetailController");
 
 // Routes
 
@@ -45,21 +46,28 @@ router.post("/contact", contactController.userContact);
 router.post("/feedback", feedbackController.feedback);
 
 // Get All Feedback
-router.get("/getAllFeedback/:product_id", feedbackController.getReviews)
-
+router.get("/getAllFeedback/:product_id", feedbackController.getReviews);
 
 // Payment
 // phonePe routes
 router.post("/create-order", paymentController.createPaymentAndGenerateUrl);
 router.post("/status", paymentController.getPhonePeUrlStatusAndUpdatePayment);
 
-
-// Add wishlist 
+// Add wishlist
 router.post("/wishlist", wishlistController.addWishlist);
 
 router.get("/getAllWishlist", wishlistController.getAllWishlist);
 
 router.delete("/removeFromWishlist", wishlistController.removeFromWishlist);
 
+// Add wishlist
+router.post("/createAddressDetails", addressDetailController.addAddress);
+
+router.get(
+  "/getAddressDetails",
+  addressDetailController.getAllAddressDetailsById
+);
+
+router.post("/deleteAddressDetails", addressDetailController.deleteAddress);
 
 module.exports = router;
