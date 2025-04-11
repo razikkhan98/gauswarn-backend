@@ -3,16 +3,16 @@ const { withConnection } = require("../../../utils/helper");
 exports.addAddressDetails = async (userData) => {
   try {
     const {
-      full_name,
-      email,
-      address,
-      house_no,
-      country,
-      contact_no,
-      state,
-      city,
-      pincode,
-      user_id,
+      uid,
+      user_city,
+      user_country,
+      user_email,
+      user_house_number,
+      user_landmark,
+      user_mobile_num,
+      user_name,
+      user_pincode,
+      user_state,
     } = userData;
 
     return await withConnection(async (connection) => {
@@ -23,16 +23,16 @@ exports.addAddressDetails = async (userData) => {
       `;
 
       const [result] = await connection.execute(query, [
-        full_name,
-        email,
-        address,
-        house_no,
-        country,
-        contact_no,
-        state,
-        city,
-        pincode,
-        user_id,
+        user_name,
+        user_email,
+        user_landmark,
+        user_house_number,
+        user_country,
+        user_mobile_num,
+        user_state,
+        user_city,
+        user_pincode,
+        uid,
       ]);
 
       return result?.insertId;

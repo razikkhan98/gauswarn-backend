@@ -93,23 +93,30 @@ router.delete(
   feedbackController.deleteReviewById
 );
 
+/** calculation start */
+
 // get all users
 router.get(
   "/getAllUserInfo",
-  authMiddleware,
+  // authMiddleware,
   userInfoController.getAllUserInfo
 );
 
 // get all orders
 router.get(
   "/getAllOrderDetails",
-  authMiddleware,
+  // authMiddleware,
   userInfoController.getAllOrderDetails
 );
 
 // get all Monthly Report
-router.get("/getAllSales", authMiddleware, monthlyReportController.getAllSales);
+router.get(
+  "/getAllSales",
+  //  authMiddleware,
+  monthlyReportController.getAllSales
+);
 
+/** calculation end */
 
 router.get("/me", authMiddleware, registerController.meAPI);
 

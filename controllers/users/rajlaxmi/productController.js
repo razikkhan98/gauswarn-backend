@@ -15,7 +15,7 @@ exports.addProduct = async (req, res) => {
       product_image,
       product_tax,
     } = req.body;
-    console.log("req.body:==== ", req.body);
+    
 
     if (
       !product_name ||
@@ -37,7 +37,7 @@ exports.addProduct = async (req, res) => {
 
       const finalPrice = calculate_price + taxAmount;
 
-      console.log("weight: ", weight);
+      
 
       return {
         weight,
@@ -66,7 +66,7 @@ exports.addProduct = async (req, res) => {
       message: "Product created successfully!",
     });
   } catch (error) {
-    console.error("Error creating product:", error);
+    
     res.json({ success: false, error: "Failed to create product" });
   }
 };
@@ -77,7 +77,7 @@ exports.getAllProducts = async (req, res) => {
     const products = await productModel.getAllProducts();
     res.json({ success: true, products });
   } catch (error) {
-    console.error("Error fetching products:", error);
+    
     res.json({ success: false, error: "Failed to fetch products" });
   }
 };
@@ -87,7 +87,7 @@ exports.getAllProductsWithFeedback = async (req, res) => {
     const products = await productModel.getAllProductsWithFeedback();
     res.json({ success: true, products });
   } catch (error) {
-    console.error("Error fetching products:", error);
+    
     res.json({ success: false, error: "Failed to fetch products" });
   }
 };
@@ -99,7 +99,7 @@ exports.updateProduct = async (req, res) => {
       return res.json({ success: false, message: "Product not found" });
     res.json({ success: true, message: "Product updated successfully!" });
   } catch (error) {
-    console.error("Error updating product:", error);
+    
     res.json({ success: false, error: "Failed to update product" });
   }
 };
@@ -113,7 +113,7 @@ exports.deleteProduct = async (req, res) => {
 
     res.json({ success: true, message: "Product deleted successfully!" });
   } catch (error) {
-    console.error("Error deleting product:", error);
+    
     res.json({ success: false, error: "Failed to delete product" });
   }
 };

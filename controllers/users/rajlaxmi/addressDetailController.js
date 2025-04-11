@@ -8,19 +8,20 @@ const {
 
 exports.addAddress = async (req, res) => {
   try {
-    const data = req.body;
+    let data = req.body;
+    console.log("data: ", data);
 
     const requiredFields = [
-      "full_name",
-      "email",
-      "address",
-      "house_no",
-      "country",
-      "contact_no",
-      "state",
-      "city",
-      "pincode",
-      "user_id",
+      "uid",
+      "user_city",
+      "user_country",
+      "user_email",
+      "user_house_number",
+      "user_landmark",
+      "user_mobile_num",
+      "user_name",
+      "user_pincode",
+      "user_state",
     ];
 
     for (const field of requiredFields) {
@@ -28,7 +29,7 @@ exports.addAddress = async (req, res) => {
         return res.json({ success: false, message: `${field} is required` });
     }
 
-    const addressDetails = await getAddressDetailsById(data?.user_id);
+    const addressDetails = await getAddressDetailsById(data?.uid);
     console.log("addressDetails: ", addressDetails);
 
     if (addressDetails?.length === 3)

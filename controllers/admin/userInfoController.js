@@ -6,7 +6,7 @@ const asyncHandler = require("express-async-handler");
 exports.getAllUserInfo = asyncHandler(async (req, res) => {
   try {
     const userInfo = await adminUserInfoModal.getAllUserInfo();
-    res.json({ userInfo });
+    res.json({ total_users: userInfo?.length });
   } catch (error) {
     console.error("Error fetching products:", error);
     res.json({ error: "Failed to fetch products" });
@@ -17,7 +17,7 @@ exports.getAllUserInfo = asyncHandler(async (req, res) => {
 exports.getAllOrderDetails = asyncHandler(async (req, res) => {
   try {
     const orderDetails = await adminUserInfoModal.getAllOrderDetails();
-    res.json({ orderDetails });
+    res.json({ total_order: orderDetails?.length });
   } catch (error) {
     console.error("Error fetching products:", error);
     res.json({ error: "Failed to fetch products" });

@@ -15,7 +15,7 @@ exports.getMonthlyUserCount = async (month, year) => {
     return await withConnection(async (connection) => {
       const query = `
         SELECT COUNT(*) AS total_users 
-        FROM organic_farmer_table_payment
+        FROM gauswarn_payment
         WHERE DATE BETWEEN ? AND ?;
       `;
       const [rows] = await connection.execute(query, [
@@ -44,7 +44,7 @@ exports.getMonthlyTotalSales = async (month, year) => {
     return await withConnection(async (connection) => {
       const query = `
         SELECT SUM(user_total_amount) AS total_sales 
-        FROM organic_farmer_table_payment
+        FROM gauswarn_payment
         WHERE DATE BETWEEN ? AND ?;
       `;
       const [rows] = await connection.execute(query, [
@@ -77,7 +77,7 @@ exports.getWeeklyUserCount = async (week, year) => {
     return await withConnection(async (connection) => {
       const query = `
         SELECT COUNT(*) AS total_users 
-        FROM organic_farmer_table_payment
+        FROM gauswarn_payment
         WHERE DATE BETWEEN ? AND ?;
       `;
       const [rows] = await connection.execute(query, [startOfWeek, endOfWeek]);
@@ -107,7 +107,7 @@ exports.getWeeklyTotalSales = async (week, year) => {
     return await withConnection(async (connection) => {
       const query = `
         SELECT SUM(user_total_amount) AS total_sales 
-        FROM organic_farmer_table_payment
+        FROM gauswarn_payment
         WHERE DATE BETWEEN ? AND ?;
       `;
       const [rows] = await connection.execute(query, [startOfWeek, endOfWeek]);
@@ -130,7 +130,7 @@ exports.getAllTotalSalesMonthlyData = async () => {
           COUNT(*) AS total_users,
           SUM(user_total_amount) AS total_amount_collected
         FROM
-          organic_farmer_table_payment
+          gauswarn_payment
         WHERE
           DATE BETWEEN ? AND ?;
       `;
@@ -174,7 +174,7 @@ exports.getWeeklyMonthlySixMonthlyData = async () => {
           SELECT 
             COUNT(*) AS weekly_total_users, 
             SUM(user_total_amount) AS weekly_total_sales
-          FROM organic_farmer_table_payment
+          FROM gauswarn_payment
           WHERE DATE BETWEEN ? AND ?;
         `;
 
@@ -183,7 +183,7 @@ exports.getWeeklyMonthlySixMonthlyData = async () => {
           SELECT 
             COUNT(*) AS monthly_total_users, 
             SUM(user_total_amount) AS monthly_total_sales
-          FROM organic_farmer_table_payment
+          FROM gauswarn_payment
           WHERE DATE BETWEEN ? AND ?;
         `;
 
@@ -192,7 +192,7 @@ exports.getWeeklyMonthlySixMonthlyData = async () => {
           SELECT 
             COUNT(*) AS six_monthly_total_users, 
             SUM(user_total_amount) AS six_monthly_total_sales
-          FROM organic_farmer_table_payment
+          FROM gauswarn_payment
           WHERE DATE BETWEEN ? AND ?;
         `;
 
@@ -245,7 +245,7 @@ exports.getEveryWeeklyMonthlyEverySixMonthlyData = async () => {
             DATE_FORMAT(DATE, '%Y-%m-%d') AS day, 
             COUNT(*) AS daily_total_users, 
             SUM(user_total_amount) AS daily_total_sales
-          FROM organic_farmer_table_payment
+          FROM gauswarn_payment
           WHERE DATE BETWEEN ? AND ?
           GROUP BY day;
         `;
@@ -255,7 +255,7 @@ exports.getEveryWeeklyMonthlyEverySixMonthlyData = async () => {
           SELECT 
             COUNT(*) AS monthly_total_users, 
             SUM(user_total_amount) AS monthly_total_sales
-          FROM organic_farmer_table_payment
+          FROM gauswarn_payment
           WHERE DATE BETWEEN ? AND ?;
         `;
 
@@ -265,14 +265,14 @@ exports.getEveryWeeklyMonthlyEverySixMonthlyData = async () => {
             DATE_FORMAT(DATE, '%Y-%m') AS month, 
             COUNT(*) AS monthly_total_users, 
             SUM(user_total_amount) AS monthly_total_sales
-          FROM organic_farmer_table_payment
+          FROM gauswarn_payment
           WHERE DATE BETWEEN ? AND ?
           GROUP BY month;
         `;
 
       // Query for monthly data
       const monthlyQueryPrice = `
-SELECT * FROM organic_farmer_table_payment
+SELECT * FROM gauswarn_payment
 WHERE DATE BETWEEN ? AND ?;
 `;
       const data = await connection.execute(monthlyQueryPrice, [
@@ -302,7 +302,7 @@ WHERE DATE BETWEEN ? AND ?;
 
       const totalOrdersQuery = `
   SELECT COUNT(*) AS total_orders 
-  FROM organic_farmer_table_payment
+  FROM gauswarn_payment
   WHERE DATE BETWEEN ? AND ?;
 `;
 
@@ -314,7 +314,7 @@ WHERE DATE BETWEEN ? AND ?;
       // get the Total Products  database
       const totalProductsQuery = `
             SELECT COUNT(*) AS total_products
-            FROM organic_farmer_table_product;
+            FROM gauswarn_product;
           `;
 
       const [totalProducts] = await connection.execute(totalProductsQuery);
@@ -361,7 +361,7 @@ exports.getEveryWeeklyMonthlyEverySixMonthlyDataTesting = async () => {
             COUNT(*) AS daily_total_users, 
             SUM(user_total_amount) AS daily_total_sales, 
             SUM(user_cost) AS daily_total_cost
-          FROM organic_farmer_table_payment
+          FROM gauswarn_payment
           WHERE DATE BETWEEN ? AND ?
           GROUP BY day;
         `;
@@ -371,7 +371,7 @@ exports.getEveryWeeklyMonthlyEverySixMonthlyDataTesting = async () => {
             COUNT(*) AS monthly_total_users, 
             SUM(user_total_amount) AS monthly_total_sales, 
             SUM(user_cost) AS monthly_total_cost
-          FROM organic_farmer_table_payment
+          FROM gauswarn_payment
           WHERE DATE BETWEEN ? AND ?;
         `;
 
@@ -381,7 +381,7 @@ exports.getEveryWeeklyMonthlyEverySixMonthlyDataTesting = async () => {
             COUNT(*) AS monthly_total_users, 
             SUM(user_total_amount) AS monthly_total_sales, 
             SUM(user_cost) AS monthly_total_cost
-          FROM organic_farmer_table_payment
+          FROM gauswarn_payment
           WHERE DATE BETWEEN ? AND ?
           GROUP BY month;
         `;
@@ -441,6 +441,103 @@ exports.getEveryWeeklyMonthlyEverySixMonthlyDataTesting = async () => {
     });
   } catch (error) {
     console.error("Error in getEveryWeeklyMonthlyEverySixMonthlyData:", error);
+    throw error;
+  }
+};
+
+exports.getEveryMonthData = async (year, month) => {
+  try {
+    const startOfMonth = moment(`${year}-${month}-01`)
+      .startOf("month")
+      .format("YYYY-MM-DD");
+    const endOfMonth = moment(`${year}-${month}-01`)
+      .endOf("month")
+      .format("YYYY-MM-DD");
+
+    return await withConnection(async (connection) => {
+      const paymentsQuery = `
+        SELECT 
+          user_total_amount, 
+          purchase_price, 
+          product_quantity 
+        FROM gauswarn_payment
+        WHERE DATE BETWEEN ? AND ?;
+      `;
+      const [payments] = await connection.execute(paymentsQuery, [
+        startOfMonth,
+        endOfMonth,
+      ]);
+
+      if (payments.length === 0) {
+        return { message: "no data found" };
+      }
+
+      let monthlySales = 0;
+      let totalProfit = 0;
+
+      for (const payment of payments) {
+        const { user_total_amount, purchase_price, product_quantity } = payment;
+
+        monthlySales += user_total_amount;
+        totalProfit += calculateProfit(
+          user_total_amount,
+          purchase_price,
+          product_quantity
+        );
+      }
+
+      const totalOrders = payments.length;
+
+      const totalProductsQuery = `
+        SELECT COUNT(*) AS total_products
+        FROM gauswarn_product;
+      `;
+      const [[{ total_products }]] = await connection.execute(
+        totalProductsQuery
+      );
+
+      return {
+        month: {
+          start: startOfMonth,
+          end: endOfMonth,
+          data: {
+            monthly_total_users: totalOrders,
+            monthly_total_sales: monthlySales,
+          },
+        },
+        monthlyProfit: totalProfit,
+        totalOrders,
+        totalProducts: total_products,
+      };
+    });
+  } catch (error) {
+    console.error("Error in getEveryMonthData:", error);
+    throw error;
+  }
+};
+
+exports.getTop5UsersTotalAmount = async () => {
+  try {
+    const query = `
+      SELECT
+        user_id,
+        user_total_amount
+      FROM
+        gauswarn_payment
+      ORDER BY
+        user_total_amount DESC
+      LIMIT 5;
+    `;
+
+    const result = await withConnection(async (connection) => {
+      const [results] = await connection.execute(query);
+      return results || []; // Return an empty array if no results
+    });
+
+    console.log("Top 5 Users by Total Amount:", result);
+    return result;
+  } catch (error) {
+    console.error("Error in getTop5UsersTotalAmount:", error);
     throw error;
   }
 };
