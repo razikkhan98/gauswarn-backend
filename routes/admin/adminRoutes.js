@@ -116,6 +116,8 @@ router.get(
   monthlyReportController.getAllSales
 );
 
+router.get("/getTop5Users", monthlyReportController.getTop5Users);
+
 /** calculation end */
 
 router.get("/me", authMiddleware, registerController.meAPI);
@@ -127,3 +129,8 @@ module.exports = router;
 // backlog
 // ALTER TABLE `organic_farmer_table_product` ADD `product_website_name` VARCHAR(255) NULL DEFAULT NULL AFTER `test`;
 // ALTER TABLE `organic_farmer_admin_user` ADD `role` VARCHAR(255) NULL DEFAULT NULL AFTER `test`;
+
+
+
+
+

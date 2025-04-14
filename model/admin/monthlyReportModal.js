@@ -444,7 +444,7 @@ exports.getEveryWeeklyMonthlyEverySixMonthlyDataTesting = async () => {
     throw error;
   }
 };
-
+// ghee
 exports.getEveryMonthData = async (year, month) => {
   try {
     const startOfMonth = moment(`${year}-${month}-01`)
@@ -515,29 +515,41 @@ exports.getEveryMonthData = async (year, month) => {
     throw error;
   }
 };
-
-exports.getTop5UsersTotalAmount = async () => {
+// ghee
+exports.getTop5UsersTotalAmount = async (year, month, limit = 5) => {
   try {
+    const startOfMonth = moment(`${year}-${month}-01`)
+      .startOf("month")
+      .format("YYYY-MM-DD");
+    const endOfMonth = moment(`${year}-${month}-01`)
+      .endOf("month")
+      .format("YYYY-MM-DD");
+
     const query = `
       SELECT
-        user_id,
-        user_total_amount
+        *
       FROM
         gauswarn_payment
+      WHERE
+        date BETWEEN ? AND ?
       ORDER BY
         user_total_amount DESC
-      LIMIT 5;
+      LIMIT ?;
     `;
 
     const result = await withConnection(async (connection) => {
-      const [results] = await connection.execute(query);
-      return results || []; // Return an empty array if no results
+      const [results] = await connection.execute(query, [
+        startOfMonth,
+        endOfMonth,
+        Number(limit),
+      ]);
+      return results || [];
     });
 
-    console.log("Top 5 Users by Total Amount:", result);
+    console.log("Top Users by Total Amount:", result);
     return result;
   } catch (error) {
-    console.error("Error in getTop5UsersTotalAmount:", error);
+    console.error("Error in getTopUsersTotalAmount:", error);
     throw error;
   }
 };
