@@ -1,40 +1,46 @@
 const { connectToDatabase } = require("../../../config/dbConnection");
+const { withConnection } = require("../../../utils/helper");
 
-exports.addReview = async (uid, product_id, user_name, user_email, rating, feedback) => {
+exports.addReview = async (
+  uid,
+  product_id,
+  user_name,
+  user_email,
+  rating,
+  feedback
+) => {
   try {
     const connection = await connectToDatabase();
-      const query = `INSERT INTO rajlaxmi_feedback (uid,product_id, user_name , user_email, rating, feedback)
+    const query = `INSERT INTO rajlaxmi_feedback (uid,product_id, user_name , user_email, rating, feedback)
         VALUES (?, ?, ?, ?, ?,?)`;
 
-      const [result] = await connection.execute(query, [
-        uid,
-        product_id,
-        user_name,
-        user_email,
-        rating,
-        feedback,
-        
-      ]);
-      return result.insertId;
-    
+    const [result] = await connection.execute(query, [
+      uid,
+      product_id,
+      user_name,
+      user_email,
+      rating,
+      feedback,
+    ]);
+    return result.insertId;
   } catch (error) {
     console.error("Database Error:", error.message);
     throw error;
   }
 };
 
-// Fetch all reviews
-// exports.getAllReviews = async () => {
-//   try {
-//     const connection = await connectToDatabase();
-//     const query = "SELECT * FROM rajlaxmi_feedback";
-//       const [rows] = await connection.execute(query);
-//       return rows;
-    
-//   } catch (error) {
-//     console.log("error: ", error);
-//   }
-// };
+exports.getAllReviewsRajlaxmi = async () => {
+  try {
+    return await withConnection(async (connection) => {
+      const query = "SELECT * FROM rajlaxmi_feedback";
+      const [rows] = await connection.execute(query);
+      return rows;
+    });
+  } catch (error) {
+    console.log("error: ", error);
+    throw error;
+  }
+};
 
 exports.getReviewsByProduct = async (product_id) => {
   let connection;

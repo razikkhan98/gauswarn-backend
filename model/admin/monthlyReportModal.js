@@ -553,3 +553,106 @@ exports.getTop5UsersTotalAmount = async (year, month, limit = 5) => {
     throw error;
   }
 };
+
+// rajlaxmi start
+
+exports.getTop5UsersTotalAmountRajlaxmi = async (year, month, limit = 5) => {
+  try {
+    const startOfMonth = moment(`${year}-${month}-01`)
+      .startOf("month")
+      .format("YYYY-MM-DD");
+    const endOfMonth = moment(`${year}-${month}-01`)
+      .endOf("month")
+      .format("YYYY-MM-DD");
+
+    const query = `
+      SELECT
+        *
+      FROM
+        rajlaxmi_payment
+      WHERE
+        date BETWEEN ? AND ?
+      ORDER BY
+        user_total_amount DESC
+      LIMIT ?;
+    `;
+
+    const result = await withConnection(async (connection) => {
+      const [results] = await connection.execute(query, [
+        startOfMonth,
+        endOfMonth,
+        Number(limit),
+      ]);
+      return results || [];
+    });
+
+    console.log("Top Users by Total Amount:", result);
+    return result;
+  } catch (error) {
+    console.error("Error in getTopUsersTotalAmount:", error);
+    throw error;
+  }
+};
+
+exports.getTotalOrdersRajlaxmi = async (year, month) => {
+  // Format to YYYY-MM
+  const startOfMonth = moment(`${year}-${month}`, "YYYY-MM")
+    .startOf("month")
+    .format("YYYY-MM-DD");
+  const endOfMonth = moment(`${year}-${month}`, "YYYY-MM")
+    .endOf("month")
+    .format("YYYY-MM-DD");
+
+  const query = `
+  SELECT 
+    order_id,
+    product_name,
+    SUM(product_quantity) as total_quantity,
+    SUM(product_total_amount) as total_sales
+  FROM order_items
+  WHERE created_at BETWEEN ? AND ?
+  GROUP BY product_name, order_id
+  ORDER BY total_sales DESC
+  `;
+
+  const result = await withConnection(async (connection) => {
+    const [results] = await connection.execute(query, [
+      startOfMonth,
+      endOfMonth,
+    ]);
+    return results || [];
+  });
+
+  return result;
+};
+
+exports.getTotalUsers = async (week, year) => {
+  try {
+    // Calculate start and end dates of the specified week
+    const startOfWeek = moment()
+      .year(year)
+      .week(week)
+      .startOf("week")
+      .format("YYYY-MM-DD");
+    const endOfWeek = moment()
+      .year(year)
+      .week(week)
+      .endOf("week")
+      .format("YYYY-MM-DD");
+
+    return await withConnection(async (connection) => {
+      const query = `
+        SELECT *
+        FROM rajlaxmi_user
+        WHERE DATE BETWEEN ? AND ?;
+      `;
+      const [rows] = await connection.execute(query, [startOfWeek, endOfWeek]);
+      return rows;
+    });
+  } catch (error) {
+    console.error("Error in getTotalUsers:", error);
+    throw error;
+  }
+};
+
+// rajlaxmi end

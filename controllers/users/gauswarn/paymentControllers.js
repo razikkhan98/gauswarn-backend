@@ -83,18 +83,19 @@ const createPaymentAndGenerateUrl = async (req, res) => {
     // Get the inserted user ID (if needed for future use)
     const userId = result.insertId;
 
-    const getOrderIdByShopmozy = await generateShopmozyAPI(
-      user_name,
-      user_mobile_num,
-      user_email,
-      user_state,
-      user_city,
-      user_house_number,
-      user_landmark,
-      user_pincode,
-      cart,
-      date
-    );
+    // created order Id shopmozy this issue
+    // const getOrderIdByShopmozy = await generateShopmozyAPI(
+    //   user_name,
+    //   user_mobile_num,
+    //   user_email,
+    //   user_state,
+    //   user_city,
+    //   user_house_number,
+    //   user_landmark,
+    //   user_pincode,
+    //   cart,
+    //   date
+    // );
 
     // Create a unique order ID
     const orderId = uuidv4();
@@ -119,13 +120,19 @@ const createPaymentAndGenerateUrl = async (req, res) => {
     );
 
     // Define the payment payload for PhonePe
+
     const paymentPayload = {
       merchantId: process.env.PHONEPE_MERCHANT_ID,
       merchantUserId: user_name, // Use userId if needed
       mobileNumber: user_mobile_num,
       amount: amountInPaise, // Use the amount in paise for PhonePe
       merchantTransactionId: orderId,
-      redirectUrl: `${process.env.REDIRECT_URL_TO_BACKEND_API}/?id=${orderId}&tarnId=${userId}&mobNo=${user_mobile_num}&amount=${user_total_amount}&orderId=${getOrderIdByShopmozy}`,
+      // redirectUrl: `${process.env.REDIRECT_URL_TO_BACKEND_API}/?id=${orderId}&tarnId=${userId}&mobNo=${user_mobile_num}&amount=${user_total_amount}&orderId=${getOrderIdByShopmozy}`,
+      redirectUrl: `${
+        process.env.REDIRECT_URL_TO_BACKEND_API
+      }/?merchantTransactionId=${orderId}&tarnId=${userId}&mobNo=${user_mobile_num}&amount=${user_total_amount}&user_name=${user_name}&user_email=${user_email}&user_state=${user_state}&user_city=${user_city}&user_house_number=${user_house_number}&user_landmark=${user_landmark}&user_pincode=${user_pincode}&cart=${JSON.stringify(
+        cart
+      )}&date=${date}`,
       redirectMode: "POST",
       paymentInstrument: {
         type: "PAY_PAGE",
@@ -197,12 +204,21 @@ const getCurrentTime = () => {
 };
 
 const getPhonePeUrlStatusAndUpdatePayment = async (req, res) => {
-  const merchantTransactionId = req?.query?.id;
-  const tarnId = req?.query?.tarnId;
-
-  const mobNo = req?.query?.mobNo;
-  const amount = req?.query?.amount;
-  const orderId = req?.query?.orderId;
+  const {
+    merchantTransactionId,
+    tarnId,
+    mobNo,
+    amount,
+    user_name,
+    user_email,
+    user_state,
+    user_city,
+    user_house_number,
+    user_landmark,
+    user_pincode,
+    cart,
+    date,
+  } = req?.query;
 
   const keyIndex = process.env.SALT_INDEX;
   const string =
@@ -245,7 +261,23 @@ const getPhonePeUrlStatusAndUpdatePayment = async (req, res) => {
     }
     // const whatsappApiUrl = `https://bhashsms.com/api/sendmsg.php?user=RAJLAKSHMIBWA&pass=123456&sender=BUZWAP&phone=${user_mobile_num}&text=gauswarn_ghee002&priority=wa&stype=normal&Params=${ordeId},${user_total_amount}&htype=image&url=https://i.ibb.co/p6P86j3J/Whats-App-Image-2025-02-17-at-12-46-41.jpg`;
     if (response?.data?.code === "PAYMENT_SUCCESS") {
-      const result = await sendWhatsAppMessage(mobNo, orderId, amount);
+      const getOrderIdByShopmozy = await generateShopmozyAPI(
+        user_name,
+        (user_mobile_num = mobNo),
+        user_email,
+        user_state,
+        user_city,
+        user_house_number,
+        user_landmark,
+        user_pincode,
+        cart,
+        date
+      );
+      const result = await sendWhatsAppMessage(
+        mobNo,
+        getOrderIdByShopmozy,
+        amount
+      );
 
       return res.redirect(process.env.REDIRECT_URL_TO_SUCCESS_PAGE);
     }
@@ -291,6 +323,7 @@ async function generateShopmozyAPI(
   date
 ) {
   try {
+    const carts = JSON?.parse(cart);
     const ShippingPayLoad = {
       order_id: "ordID",
       order_date: date,
@@ -304,7 +337,7 @@ async function generateShopmozyAPI(
       consignee_pin_code: user_pincode,
       consignee_city: user_city,
       consignee_state: user_state,
-      product_detail: cart?.map((i) => {
+      product_detail: carts?.map((i) => {
         return {
           name: i?.product_name,
           sku_number: "22",

@@ -10,9 +10,9 @@ const {
   generateMergedKey,
 } = require("../../../utils/payment.service");
 const { withConnection } = require("../../../utils/helper");
-const { processOrderAfterPayment } = require("../../../utils/processOrderAfterPayment");
-
-
+const {
+  processOrderAfterPayment,
+} = require("../../../utils/processOrderAfterPayment");
 
 const createPaymentAndGenerateUrl = async (req, res) => {
   try {
@@ -33,7 +33,6 @@ const createPaymentAndGenerateUrl = async (req, res) => {
       user_coupon,
     } = req.body;
 
-
     if (
       !uid ||
       !user_name ||
@@ -48,9 +47,7 @@ const createPaymentAndGenerateUrl = async (req, res) => {
       !user_total_amount ||
       !purchase_price
     ) {
-      return res
-        
-        .json({ success: false, message: "All fields are required." });
+      return res.json({ success: false, message: "All fields are required." });
     }
 
     const date = moment().format("YYYY-MM-DD");
@@ -139,10 +136,8 @@ const createPaymentAndGenerateUrl = async (req, res) => {
       throw new Error("Redirect URL not found in PhonePe response");
     }
 
-    res
-    
-    .json({
-      status:200,
+    res.json({
+      status: 200,
       success: true,
       message: "Payment URL generated successfully",
       url: response.data.data.instrumentResponse.redirectInfo.url,
@@ -152,13 +147,11 @@ const createPaymentAndGenerateUrl = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in createPaymentAndGenerateUrl:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Payment generation failed",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Payment generation failed",
+      error: error.message,
+    });
   }
 };
 
@@ -190,7 +183,7 @@ const getPhonePeUrlStatusAndUpdatePayment = async (req, res) => {
     const paymentDetails = JSON.stringify(response.data);
     const isPaymentPaid = paymentStatus === "PAYMENT_SUCCESS";
 
-    const query = `UPDATE rajlaxmi_payment SET status = ?, paymentDetails = ?, isPaymentPaid = ? WHERE id = ?`;
+    const query = `UPDATE rajlaxmi_payment SET status = ?, paymentDetails = ?, isPaymentPaid = ? WHERE user_id = ?`;
     await withConnection(async (connection) =>
       connection.execute(query, [
         paymentStatus,
@@ -200,10 +193,10 @@ const getPhonePeUrlStatusAndUpdatePayment = async (req, res) => {
       ])
     );
 
-     // ✅ If payment is successful, process the order
-     if (isPaymentPaid) {
+    // ✅ If payment is successful, process the order
+    if (isPaymentPaid) {
       await processOrderAfterPayment(tarnId);
-    } 
+    }
 
     const redirectUrl = isPaymentPaid
       ? process.env.REDIRECT_URL_TO_SUCCESS_PAGE_RAJLAXMI
