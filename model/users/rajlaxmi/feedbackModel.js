@@ -56,3 +56,15 @@ exports.getReviewsByProduct = async (product_id) => {
     if (connection) await connection.end(); // Close connection to prevent leaks
   }
 };
+// admin
+exports.deleteReviewByIdRajlaxmi = async (id) => {
+  try {
+    return await withConnection(async (connection) => {
+      const query = "DELETE FROM rajlaxmi_feedback WHERE id = ?";
+      const [result] = await connection.execute(query, [id]);
+      return result.affectedRows > 0;
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};

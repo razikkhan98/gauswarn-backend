@@ -96,23 +96,20 @@ exports.getTotalOrdersRajlaxmi = async (req, res) => {
   }
 };
 
-
-
 exports.getTotalUsers = async (req, res) => {
   try {
-    const { month, year } = req.query;
+    // const { month, year } = req.query;
 
-    if (!month || !year) {
-      return res.json({
-        success: false,
-        message: "Month and Year are required as query parameters",
-      });
-    }
+    // if (!month || !year) {
+    //   return res.json({
+    //     success: false,
+    //     message: "Month and Year are required as query parameters",
+    //   });
+    // }
 
-    const total_users = await monthlyReportModal.getTotalUsers(
-      year,
-      month
-    );
+    const total_users = await monthlyReportModal.getTotalUsers();
+    // year,
+    // month
 
     res.json({
       success: true,

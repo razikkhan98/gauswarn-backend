@@ -7,11 +7,16 @@ const contactController = require("../../controllers/users/gauswarn/contactContr
 const registerController = require("../../controllers/admin/registerController");
 const loginController = require("../../controllers/admin/loginController");
 const feedbackController = require("../../controllers/users/gauswarn/feedbackController");
+
 const userInfoController = require("../../controllers/admin/userInfoController");
 const forgotPasswordController = require("../../controllers/admin/forgotPasswordController");
 const monthlyReportController = require("../../controllers/admin/monthlyReportController");
 const { errorHandler } = require("../../middlewares/errorHandler");
 const { authMiddleware } = require("../../middlewares/authMiddleware");
+
+const feedbackControllerRajlaxmi = require("../../controllers/users/rajlaxmi/feedbackController");
+
+const contactControllerRajlaxmi = require("../../controllers/users/rajlaxmi/contactController");
 
 // admin registration
 router.post("/register", registerController.adminUserRegister);
@@ -127,8 +132,20 @@ router.get(
   monthlyReportController.getTop5UsersTotalAmountRajlaxmi
 );
 
-
 router.get("/getTotalUsers", monthlyReportController.getTotalUsers);
+router.get(
+  "/getAllFeedbackRajlaxmi",
+  feedbackControllerRajlaxmi.getAllReviewsRajlaxmi
+);
+router.delete(
+  "/deleteFeedbackById/:feedback_id",
+  feedbackControllerRajlaxmi.deleteReviewsRajlaxmiById
+);
+
+router.get(
+  "/getAllTotalContactsRajlaxmi",
+  contactControllerRajlaxmi.getAllTotalContacts
+);
 
 /** rajlaxmi calculation end*/
 

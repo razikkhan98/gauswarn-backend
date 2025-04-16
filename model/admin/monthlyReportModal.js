@@ -625,28 +625,30 @@ exports.getTotalOrdersRajlaxmi = async (year, month) => {
 
   return result;
 };
-
-exports.getTotalUsers = async (week, year) => {
+// admin rajlaxmi
+exports.getTotalUsers = async () => {
   try {
+    // week, year
     // Calculate start and end dates of the specified week
-    const startOfWeek = moment()
-      .year(year)
-      .week(week)
-      .startOf("week")
-      .format("YYYY-MM-DD");
-    const endOfWeek = moment()
-      .year(year)
-      .week(week)
-      .endOf("week")
-      .format("YYYY-MM-DD");
+    // const startOfWeek = moment()
+    //   .year(year)
+    //   .week(week)
+    //   .startOf("week")
+    //   .format("YYYY-MM-DD");
+    // const endOfWeek = moment()
+    //   .year(year)
+    //   .week(week)
+    //   .endOf("week")
+    //   .format("YYYY-MM-DD");
 
     return await withConnection(async (connection) => {
       const query = `
         SELECT *
-        FROM rajlaxmi_user
-        WHERE DATE BETWEEN ? AND ?;
+        FROM rajlaxmi_user;
       `;
-      const [rows] = await connection.execute(query, [startOfWeek, endOfWeek]);
+      // WHERE DATE BETWEEN ? AND ?
+      // startOfWeek, endOfWeek
+      const [rows] = await connection.execute(query, []);
       return rows;
     });
   } catch (error) {
